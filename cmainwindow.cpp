@@ -15,12 +15,13 @@
 cMainWindow::cMainWindow(cSplashScreen* lpSplashScreen, QWidget *parent)
 	: QMainWindow(parent),
 	ui(new Ui::cMainWindow),
-	m_lpSplashScreen(lpSplashScreen)
+	m_lpSplashScreen(lpSplashScreen),
+	m_lpFileBrowser(0)
 {
+	setImageFormats();
+
 	initUI();
 	createActions();
-
-	setImageFormats();
 }
 
 cMainWindow::~cMainWindow()
@@ -58,7 +59,14 @@ void cMainWindow::initUI()
 
 	ui->setupUi(this);
 
-//	QIcon::setThemeName("TangoMFK");
+	QIcon::setThemeName("TangoMFK");
+
+	m_lpProgressBar			= new QProgressBar(this);
+	m_lpProgressBar->setVisible(false);
+	ui->m_lpStatusBar->addPermanentWidget(m_lpProgressBar);
+
+	m_lpFileBrowser	= new cFileBrowser(m_lpProgressBar, &m_imageFormats, this);
+	ui->m_lpMainTab->addTab(m_lpFileBrowser, "Files");
 
 //	m_lpFileListModel	= new QStandardItemModel;
 //	ui->m_lpFileList->setModel(m_lpFileListModel);
@@ -75,10 +83,6 @@ void cMainWindow::initUI()
 		if(iX != -1 && iY != -1)
 			move(iX, iY);
 	}
-
-//	m_lpProgressBar			= new QProgressBar(this);
-//	m_lpProgressBar->setVisible(false);
-//	ui->m_lpStatusBar->addPermanentWidget(m_lpProgressBar);
 
 //	QStringList			headerLabels	= QStringList() << tr("icon") << tr("path") << tr("file") << tr("size") << tr("date") << tr("width") << tr("height") << ("");
 //	m_lpFileListModel->setHorizontalHeaderLabels(headerLabels);

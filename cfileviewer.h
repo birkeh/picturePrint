@@ -1,7 +1,9 @@
 #ifndef CFILEVIEWER_H
 #define CFILEVIEWER_H
 
+
 #include <QWidget>
+
 
 namespace Ui {
 class cFileViewer;
@@ -15,8 +17,11 @@ public:
 	explicit cFileViewer(QWidget *parent = nullptr);
 	~cFileViewer();
 
+	void	setImage(const QString& fileName, const QPixmap& image);
+
 private:
-	Ui::cFileViewer *ui;
+	Ui::cFileViewer*	ui;
+	QString				m_fileName;
 };
 
 #endif // CFILEVIEWER_H

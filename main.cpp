@@ -14,10 +14,10 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 
 	a.setApplicationVersion(APP_VERSION);
-	a.setApplicationDisplayName("pictureConvert");
+	a.setApplicationDisplayName("picturePrint");
 	a.setOrganizationName("WIN-DESIGN");
 	a.setOrganizationDomain("windesign.at");
-	a.setApplicationName("pictureConvert");
+	a.setApplicationName("picturePrint");
 
 	QSettings		settings;
 

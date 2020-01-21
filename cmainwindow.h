@@ -5,8 +5,11 @@
 #include "csplashscreen.h"
 #include "common.h"
 
+#include "cfilebrowser.h"
+
 #include <QMainWindow>
 #include <QCloseEvent>
+#include <QProgressBar>
 
 
 QT_BEGIN_NAMESPACE
@@ -25,6 +28,9 @@ public:
 private:
 	Ui::cMainWindow*				ui;
 	cSplashScreen*					m_lpSplashScreen;
+	QProgressBar*					m_lpProgressBar;
+
+	cFileBrowser*					m_lpFileBrowser;
 
 	QList<IMAGEFORMAT>				m_imageFormats;
 

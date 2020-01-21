@@ -44,17 +44,27 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    cexif.cpp \
+    cfilebrowser.cpp \
+    cfileviewer.cpp \
+    cimage.cpp \
     common.cpp \
     csplashscreen.cpp \
     main.cpp \
     cmainwindow.cpp
 
 HEADERS += \
+    cexif.h \
+    cfilebrowser.h \
+    cfileviewer.h \
+    cimage.h \
     cmainwindow.h \
     common.h \
     csplashscreen.h
 
 FORMS += \
+    cfilebrowser.ui \
+    cfileviewer.ui \
     cmainwindow.ui
 
 TRANSLATIONS += \
