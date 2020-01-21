@@ -79,4 +79,5 @@ RESOURCES += \
     pictureprint.qrc \
     qdarkstyle/style.qrc
 
-DISTFILES +=
+DISTFILES += \
+    picturePrint.db
