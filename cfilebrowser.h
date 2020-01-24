@@ -13,6 +13,8 @@
 
 #include <QFileInfo>
 
+#include <QSqlDatabase>
+
 
 namespace Ui {
 class cFileBrowser;
@@ -41,6 +43,10 @@ private:
 	cIPTCTagList			m_iptcTagList;
 
 	cXMPTagList				m_xmpTagList;
+
+	QSqlDatabase			m_cacheDB;
+
+	bool					m_working;
 
 	void					addFile(const QFileInfo& fileInfo);
 

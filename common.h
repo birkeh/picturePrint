@@ -32,8 +32,11 @@ typedef struct tagIMAGEFORMAT
 } IMAGEFORMAT;
 
 
-QStringList	generateReadList(const QList<IMAGEFORMAT>& imageFormats);
-QStringList	generateWriteList(const QList<IMAGEFORMAT>& imageFormats);
+QStringList		generateReadList(const QList<IMAGEFORMAT>& imageFormats);
+QStringList		generateWriteList(const QList<IMAGEFORMAT>& imageFormats);
+
+QImage			blob2Image(const QByteArray& ba);
+QByteArray		image2Blob(const QImage& image);
 
 
 #endif // COMMON_H

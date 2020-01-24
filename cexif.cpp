@@ -14,6 +14,7 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlError>
 
 #include <exiv2/exiv2.hpp>
 
@@ -28,8 +29,14 @@ cEXIF::cEXIF(cEXIFTagList* lpEXIFTagList, cEXIFCompressionList* lpEXIFCompressio
 	m_lpEXIFLightSourceList(lpEXIFLightSourceList),
 	m_lpEXIFFlashList(lpEXIFFlashList),
 	m_lpIPTCTagList(lpIPTCTagList),
-	m_lpXMPTagList(lpXMPTagList)
+	m_lpXMPTagList(lpXMPTagList),
+	m_lpCacheDB(nullptr)
 {
+}
+
+void cEXIF::setCacheDB(QSqlDatabase* lpCacheDB)
+{
+	m_lpCacheDB	= lpCacheDB;
 }
 
 bool cEXIF::fromFile(const QString& szFileName)
@@ -155,32 +162,86 @@ bool cEXIF::fromFile(const QString& szFileName)
 	if(!m_previewList.count())
 	{
 		QImage	image;
-		if(image.load(szFileName))
+
+		if(m_lpCacheDB && m_lpCacheDB->isOpen())
 		{
-			QTransform	rotation;
-			int			angle	= 0;
+			QSqlQuery	query(*m_lpCacheDB);
+			QFileInfo	fileInfo(szFileName);
 
-			switch(imageOrientation())
+			query.prepare("SELECT thumbnail FROM files WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
+			query.bindValue(":fileName", szFileName);
+			query.bindValue(":fileSize", fileInfo.size());
+			query.bindValue(":fileDate", fileInfo.birthTime());
+
+			if(!query.exec())
+				qDebug() << query.lastError().text();
+			else
 			{
-			case 8:
-				angle	= 270;
-				break;
-			case 3:
-				angle	= 180;
-				break;
-			case 6:
-				angle	=  90;
-				break;
+				if(query.first())
+					image	= blob2Image(query.value("thumbnail").toByteArray());
 			}
-
-			if(angle != 0)
-			{
-				rotation.rotate(angle);
-				image	= image.transformed(rotation);
-			}
-
-			m_thumbnail	= image.scaled(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
+
+		if(image.isNull())
+		{
+			if(image.load(szFileName))
+			{
+				QTransform	rotation;
+				int			angle	= 0;
+
+				switch(imageOrientation())
+				{
+				case 8:
+					angle	= 270;
+					break;
+				case 3:
+					angle	= 180;
+					break;
+				case 6:
+					angle	=  90;
+					break;
+				}
+
+				if(angle != 0)
+				{
+					rotation.rotate(angle);
+					image	= image.transformed(rotation);
+				}
+
+				m_thumbnail	= image.scaled(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+				if(m_lpCacheDB && m_lpCacheDB->isOpen())
+				{
+					QSqlQuery	query(*m_lpCacheDB);
+					QFileInfo	fileInfo(szFileName);
+
+					query.prepare("SELECT COUNT(1) cnt FROM files WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
+					query.bindValue(":fileName", szFileName);
+					query.bindValue(":fileSize", fileInfo.size());
+					query.bindValue(":fileDate", fileInfo.birthTime());
+
+					if(!query.exec())
+						qDebug() << query.lastError().text();
+					else
+					{
+						query.first();
+						if(!query.value("cnt").toInt())
+						{
+							query.prepare("INSERT INTO files (fileName, fileSize, fileDate, thumbnail) VALUES (:fileName, :fileSize, :fileDate, :thumbnail);");
+							query.bindValue(":fileName", szFileName);
+							query.bindValue(":fileSize", fileInfo.size());
+							query.bindValue(":fileDate", fileInfo.birthTime());
+							query.bindValue(":thumbnail", image2Blob(m_thumbnail));
+
+							if(!query.exec())
+								qDebug() << query.lastError().text();
+						}
+					}
+				}
+			}
+		}
+		else
+			m_thumbnail	= image;
 	}
 	else
 	{
@@ -537,14 +598,14 @@ cEXIFCompression::cEXIFCompression(const qint32& iID, const QString& szCompressi
 
 cEXIFCompressionList::cEXIFCompressionList()
 {
-	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE", "exifCompressionList");
 	db.setHostName("localhost");
 	db.setDatabaseName("picturePrint.db");
 
 	if(!db.open())
 		return;
 
-	QSqlQuery	query;
+	QSqlQuery	query(db);
 
 	query.prepare("SELECT id, compression FROM exifCompression;");
 	if(!query.exec())
@@ -599,14 +660,14 @@ cEXIFLightSource::cEXIFLightSource(const qint32& iID, const QString& szLightSour
 
 cEXIFLightSourceList::cEXIFLightSourceList()
 {
-	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE", "exifLightSourceList");
 	db.setHostName("localhost");
 	db.setDatabaseName("picturePrint.db");
 
 	if(!db.open())
 		return;
 
-	QSqlQuery	query;
+	QSqlQuery	query(db);
 
 	query.prepare("SELECT id, lightsource FROM exifLightSource;");
 	if(!query.exec())
@@ -661,14 +722,14 @@ cEXIFFlash::cEXIFFlash(const qint32& iID, const QString& szFlash) :
 
 cEXIFFlashList::cEXIFFlashList()
 {
-	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE", "exifFlashList");
 	db.setHostName("localhost");
 	db.setDatabaseName("picturePrint.db");
 
 	if(!db.open())
 		return;
 
-	QSqlQuery	query;
+	QSqlQuery	query(db);
 
 	query.prepare("SELECT id, lightsource FROM exifLightSource;");
 	if(!query.exec())
@@ -727,14 +788,14 @@ cEXIFTag::cEXIFTag(const qint32& iTAGID, const QString& szTAGName, const QString
 
 cEXIFTagList::cEXIFTagList()
 {
-	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE", "exifTagList");
 	db.setHostName("localhost");
 	db.setDatabaseName("picturePrint.db");
 
 	if(!db.open())
 		return;
 
-	QSqlQuery	query;
+	QSqlQuery	query(db);
 
 	query.prepare("SELECT tag, ifd, key, type, description FROM exifTags;");
 	if(!query.exec())
@@ -1037,14 +1098,14 @@ cXMPTag::cXMPTag(const QString& szTAGName, const qint32& iTypeID, const QString&
 
 cXMPTagList::cXMPTagList()
 {
-	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE", "xmpTagList");
 	db.setHostName("localhost");
 	db.setDatabaseName("picturePrint.db");
 
 	if(!db.open())
 		return;
 
-	QSqlQuery	query;
+	QSqlQuery	query(db);
 
 	query.prepare("SELECT tag, type, description FROM xmpTags;");
 	if(!query.exec())

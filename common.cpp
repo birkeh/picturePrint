@@ -1,5 +1,8 @@
 #include "common.h"
 
+#include <QImage>
+#include <QBuffer>
+
 
 QStringList generateReadList(const QList<IMAGEFORMAT>& imageFormats)
 {
@@ -29,4 +32,28 @@ QStringList generateWriteList(const QList<IMAGEFORMAT>& imageFormats)
 	}
 
 	return(writeList);
+}
+
+QImage blob2Image(const QByteArray& ba)
+{
+	QImage		image;
+
+	if(!ba.isEmpty())
+	{
+		if(!image.loadFromData(ba))
+			myDebug << "image load error.";
+	}
+
+	return(image);
+}
+
+QByteArray image2Blob(const QImage &image)
+{
+	QByteArray	ba;
+	QBuffer		buffer(&ba);
+	buffer.open(QIODevice::WriteOnly);
+	image.save(&buffer, "JPG");
+	buffer.close();
+
+	return(ba);
 }

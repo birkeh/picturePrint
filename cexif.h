@@ -612,6 +612,14 @@ public:
 	/*!
 	 \brief
 
+	 \fn setCacheDB
+	 \param lpCacheDB
+	*/
+	void					setCacheDB(QSqlDatabase* lpCacheDB);
+
+	/*!
+	 \brief
+
 	 \fn fromFile
 	 \param szFileName
 	 \return bool
@@ -828,6 +836,8 @@ private:
 	cIPTCTagList*			m_lpIPTCTagList;				/*!< TODO: describe */
 
 	cXMPTagList*			m_lpXMPTagList;					/*!< TODO: describe */
+
+	QSqlDatabase*			m_lpCacheDB;					/*!< TODO: describe */
 
 	/*!
 	 \brief

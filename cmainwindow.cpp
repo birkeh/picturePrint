@@ -140,14 +140,14 @@ void cMainWindow::setImageFormats()
 	QList<QByteArray>	readList	= QImageReader::supportedImageFormats();
 	QList<QByteArray>	writeList	= QImageWriter::supportedImageFormats();
 
-	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase	db	= QSqlDatabase::addDatabase("QSQLITE", "picturePrint");
 	db.setHostName("localhost");
 	db.setDatabaseName("picturePrint.db");
 
 	if(!db.open())
 		return;
 
-	QSqlQuery	query;
+	QSqlQuery	query(db);
 
 	query.prepare("SELECT shortname, description, extension FROM imageFormat;");
 	if(!query.exec())
