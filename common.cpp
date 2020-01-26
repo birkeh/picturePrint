@@ -2,6 +2,7 @@
 
 #include <QImage>
 #include <QBuffer>
+#include <QDir>
 
 
 QStringList generateReadList(const QList<IMAGEFORMAT>& imageFormats)
@@ -56,4 +57,9 @@ QByteArray image2Blob(const QImage &image)
 	buffer.close();
 
 	return(ba);
+}
+
+QString userDir()
+{
+	return(QDir::homePath() + QDir::separator() + ".picturePrint" + QDir::separator());
 }

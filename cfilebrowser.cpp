@@ -16,6 +16,7 @@
 #include <QElapsedTimer>
 
 #include <QSqlQuery>
+#include <QSqlError>
 
 
 cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpImageFormats, QWidget *parent) :
@@ -43,7 +44,7 @@ cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpIm
 
 	m_cacheDB	= QSqlDatabase::addDatabase("QSQLITE", "cacheDB");
 	m_cacheDB.setHostName("localhost");
-	m_cacheDB.setDatabaseName("C:\\Temp\\picturePrint.db");
+	m_cacheDB.setDatabaseName(userDir() + "cache.db");
 
 	m_cacheDB.open();
 	if(!m_cacheDB.open())
@@ -58,6 +59,7 @@ cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpIm
 					  "    fileName                 TEXT, "
 					  "    fileSize                 BIGINT, "
 					  "    fileDate                 DATETIME, "
+					  "    cacheDate                DATETIME, "
 					  "    thumbnail                BLOB "
 					  ");");
 
@@ -95,14 +97,12 @@ void cFileBrowser::onDirectoryChanged(const QItemSelection& selected, const QIte
 
 	m_lpProgressBar->setRange(0, list.count());
 
-	m_cacheDB.transaction();
 	for(int x = 0;x < list.count();x++)
 	{
 		addFile(list[x]);
 		m_lpProgressBar->setValue(x);
 		qApp->processEvents();
 	}
-	m_cacheDB.commit();
 
 	ui->m_lpDirectoryList->setEnabled(true);
 	m_lpProgressBar->setVisible(false);

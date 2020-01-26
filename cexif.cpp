@@ -227,7 +227,7 @@ bool cEXIF::fromFile(const QString& szFileName)
 						query.first();
 						if(!query.value("cnt").toInt())
 						{
-							query.prepare("INSERT INTO files (fileName, fileSize, fileDate, thumbnail) VALUES (:fileName, :fileSize, :fileDate, :thumbnail);");
+							query.prepare("INSERT INTO files (fileName, fileSize, fileDate, cacheDate, thumbnail) VALUES (:fileName, :fileSize, :fileDate, DATETIME('now'), :thumbnail);");
 							query.bindValue(":fileName", szFileName);
 							query.bindValue(":fileSize", fileInfo.size());
 							query.bindValue(":fileDate", fileInfo.birthTime());

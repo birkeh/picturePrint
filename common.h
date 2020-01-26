@@ -38,5 +38,7 @@ QStringList		generateWriteList(const QList<IMAGEFORMAT>& imageFormats);
 QImage			blob2Image(const QByteArray& ba);
 QByteArray		image2Blob(const QImage& image);
 
+QString			userDir();
+
 
 #endif // COMMON_H
