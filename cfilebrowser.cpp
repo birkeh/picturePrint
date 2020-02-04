@@ -48,7 +48,13 @@ cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpIm
 
 	m_cacheDB.open();
 	if(!m_cacheDB.open())
-		return;
+	{
+		QDir	dir(userDir());
+		dir.mkpath(userDir());
+
+		if(!m_cacheDB.open())
+			return;
+	}
 
 	QSqlQuery	query(m_cacheDB);
 

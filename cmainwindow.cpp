@@ -16,7 +16,7 @@ cMainWindow::cMainWindow(cSplashScreen* lpSplashScreen, QWidget *parent)
 	: QMainWindow(parent),
 	ui(new Ui::cMainWindow),
 	m_lpSplashScreen(lpSplashScreen),
-	m_lpFileBrowser(0)
+	m_lpFileBrowser(nullptr)
 {
 	setImageFormats();
 
