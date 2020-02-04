@@ -39,15 +39,39 @@ void cEXIF::setCacheDB(QSqlDatabase* lpCacheDB)
 	m_lpCacheDB	= lpCacheDB;
 }
 
-bool cEXIF::fromFile(const QString& szFileName)
+bool cEXIF::fromFile(const QString& szFileName, bool thumbnailOnly)
 {
 	if(!QFile::exists(szFileName))
 		return(false);
+
+	bool	cache	= false;
 
 	m_exifValueList.clear();
 	m_previewList.clear();
 
 	m_szFileName	= "";
+
+	if(m_lpCacheDB && m_lpCacheDB->isOpen())
+	{
+		QSqlQuery	query(*m_lpCacheDB);
+		QFileInfo	fileInfo(szFileName);
+
+		query.prepare("SELECT thumbnail FROM files WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
+		query.bindValue(":fileName", szFileName);
+		query.bindValue(":fileSize", fileInfo.size());
+		query.bindValue(":fileDate", fileInfo.birthTime());
+
+		if(!query.exec())
+			qDebug() << query.lastError().text();
+		else
+		{
+			if(query.first())
+			{
+				m_thumbnail	= blob2Image(query.value("thumbnail").toByteArray());
+				cache		= true;
+			}
+		}
+	}
 
 	try
 	{
@@ -83,16 +107,19 @@ bool cEXIF::fromFile(const QString& szFileName)
 				}
 			}
 
-			Exiv2::PreviewManager			previewManager(*image);
-			Exiv2::PreviewPropertiesList	previewPropertiesList	= previewManager.getPreviewProperties();
-
-			for(Exiv2::PreviewPropertiesList::const_iterator i = previewPropertiesList.begin();i != previewPropertiesList.end();i++)
+			if((thumbnailOnly && m_thumbnail.isNull()) || !thumbnailOnly)
 			{
-				Exiv2::PreviewImage				previewImage			= previewManager.getPreviewImage(*i);
-				QImage							image;
-				image.loadFromData(static_cast<const uchar*>(previewImage.pData()), static_cast<qint32>(previewImage.size()));
+				Exiv2::PreviewManager			previewManager(*image);
+				Exiv2::PreviewPropertiesList	previewPropertiesList	= previewManager.getPreviewProperties();
 
-				m_previewList.append(image);
+				for(Exiv2::PreviewPropertiesList::const_iterator i = previewPropertiesList.begin();i != previewPropertiesList.end();i++)
+				{
+					Exiv2::PreviewImage				previewImage			= previewManager.getPreviewImage(*i);
+					QImage							image;
+					image.loadFromData(static_cast<const uchar*>(previewImage.pData()), static_cast<qint32>(previewImage.size()));
+
+					m_previewList.append(image);
+				}
 			}
 		}
 
@@ -111,16 +138,19 @@ bool cEXIF::fromFile(const QString& szFileName)
 				}
 			}
 
-			Exiv2::PreviewManager			previewManager(*image);
-			Exiv2::PreviewPropertiesList	previewPropertiesList	= previewManager.getPreviewProperties();
-
-			for(Exiv2::PreviewPropertiesList::const_iterator i = previewPropertiesList.begin();i != previewPropertiesList.end();i++)
+			if((thumbnailOnly && m_thumbnail.isNull()) || !thumbnailOnly)
 			{
-				Exiv2::PreviewImage				previewImage			= previewManager.getPreviewImage(*i);
-				QImage							image;
-				image.loadFromData(static_cast<const uchar*>(previewImage.pData()), static_cast<qint32>(previewImage.size()));
+				Exiv2::PreviewManager			previewManager(*image);
+				Exiv2::PreviewPropertiesList	previewPropertiesList	= previewManager.getPreviewProperties();
 
-				m_previewList.append(image);
+				for(Exiv2::PreviewPropertiesList::const_iterator i = previewPropertiesList.begin();i != previewPropertiesList.end();i++)
+				{
+					Exiv2::PreviewImage				previewImage			= previewManager.getPreviewImage(*i);
+					QImage							image;
+					image.loadFromData(static_cast<const uchar*>(previewImage.pData()), static_cast<qint32>(previewImage.size()));
+
+					m_previewList.append(image);
+				}
 			}
 		}
 
@@ -140,16 +170,19 @@ bool cEXIF::fromFile(const QString& szFileName)
 				}
 			}
 
-			Exiv2::PreviewManager			previewManager(*image);
-			Exiv2::PreviewPropertiesList	previewPropertiesList	= previewManager.getPreviewProperties();
-
-			for(Exiv2::PreviewPropertiesList::const_iterator i = previewPropertiesList.begin();i != previewPropertiesList.end();i++)
+			if((thumbnailOnly && m_thumbnail.isNull()) || !thumbnailOnly)
 			{
-				Exiv2::PreviewImage				previewImage			= previewManager.getPreviewImage(*i);
-				QImage							image;
-				image.loadFromData(static_cast<const uchar*>(previewImage.pData()), static_cast<qint32>(previewImage.size()));
+				Exiv2::PreviewManager			previewManager(*image);
+				Exiv2::PreviewPropertiesList	previewPropertiesList	= previewManager.getPreviewProperties();
 
-				m_previewList.append(image);
+				for(Exiv2::PreviewPropertiesList::const_iterator i = previewPropertiesList.begin();i != previewPropertiesList.end();i++)
+				{
+					Exiv2::PreviewImage				previewImage			= previewManager.getPreviewImage(*i);
+					QImage							image;
+					image.loadFromData(static_cast<const uchar*>(previewImage.pData()), static_cast<qint32>(previewImage.size()));
+
+					m_previewList.append(image);
+				}
 			}
 		}
 	}
@@ -159,89 +192,39 @@ bool cEXIF::fromFile(const QString& szFileName)
 		return(false);
 	}
 
-	if(!m_previewList.count())
+	if(!m_previewList.count() && m_thumbnail.isNull())
 	{
 		QImage	image;
 
-		if(m_lpCacheDB && m_lpCacheDB->isOpen())
+		if(image.load(szFileName))
 		{
-			QSqlQuery	query(*m_lpCacheDB);
-			QFileInfo	fileInfo(szFileName);
+			QTransform	rotation;
+			int			angle	= 0;
 
-			query.prepare("SELECT thumbnail FROM files WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
-			query.bindValue(":fileName", szFileName);
-			query.bindValue(":fileSize", fileInfo.size());
-			query.bindValue(":fileDate", fileInfo.birthTime());
-
-			if(!query.exec())
-				qDebug() << query.lastError().text();
-			else
+			switch(imageOrientation())
 			{
-				if(query.first())
-					image	= blob2Image(query.value("thumbnail").toByteArray());
+			case 8:
+				angle	= 270;
+				break;
+			case 3:
+				angle	= 180;
+				break;
+			case 6:
+				angle	=  90;
+				break;
 			}
+
+			if(angle != 0)
+			{
+				rotation.rotate(angle);
+				image	= image.transformed(rotation);
+			}
+
+			m_thumbnail	= image.scaled(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			m_previewList.append(m_thumbnail);
 		}
 
-		if(image.isNull())
-		{
-			if(image.load(szFileName))
-			{
-				QTransform	rotation;
-				int			angle	= 0;
-
-				switch(imageOrientation())
-				{
-				case 8:
-					angle	= 270;
-					break;
-				case 3:
-					angle	= 180;
-					break;
-				case 6:
-					angle	=  90;
-					break;
-				}
-
-				if(angle != 0)
-				{
-					rotation.rotate(angle);
-					image	= image.transformed(rotation);
-				}
-
-				m_thumbnail	= image.scaled(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-				if(m_lpCacheDB && m_lpCacheDB->isOpen())
-				{
-					QSqlQuery	query(*m_lpCacheDB);
-					QFileInfo	fileInfo(szFileName);
-
-					query.prepare("SELECT COUNT(1) cnt FROM files WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
-					query.bindValue(":fileName", szFileName);
-					query.bindValue(":fileSize", fileInfo.size());
-					query.bindValue(":fileDate", fileInfo.birthTime());
-
-					if(!query.exec())
-						qDebug() << query.lastError().text();
-					else
-					{
-						query.first();
-						if(!query.value("cnt").toInt())
-						{
-							query.prepare("INSERT INTO files (fileName, fileSize, fileDate, cacheDate, thumbnail) VALUES (:fileName, :fileSize, :fileDate, DATETIME('now'), :thumbnail);");
-							query.bindValue(":fileName", szFileName);
-							query.bindValue(":fileSize", fileInfo.size());
-							query.bindValue(":fileDate", fileInfo.birthTime());
-							query.bindValue(":thumbnail", image2Blob(m_thumbnail));
-
-							if(!query.exec())
-								qDebug() << query.lastError().text();
-						}
-					}
-				}
-			}
-		}
-		else
-			m_thumbnail	= image;
+		m_previewList.append(m_thumbnail);
 	}
 	else
 	{
@@ -305,6 +288,37 @@ bool cEXIF::fromFile(const QString& szFileName)
 			{
 				rotation.rotate(angle);
 				m_thumbnail	= m_thumbnail.transformed(rotation);
+			}
+		}
+	}
+
+
+	if(m_lpCacheDB && m_lpCacheDB->isOpen() && !cache && !m_thumbnail.isNull())
+	{
+		QSqlQuery	query(*m_lpCacheDB);
+		QFileInfo	fileInfo(szFileName);
+
+		query.prepare("SELECT COUNT(1) cnt FROM files WHERE fileName=:fileName AND fileSize=:fileSize AND fileDate=:fileDate;");
+
+		query.bindValue(":fileName", szFileName);
+		query.bindValue(":fileSize", fileInfo.size());
+		query.bindValue(":fileDate", fileInfo.birthTime());
+
+		if(!query.exec())
+			qDebug() << query.lastError().text();
+		else
+		{
+			query.first();
+			if(!query.value("cnt").toInt())
+			{
+				query.prepare("INSERT INTO files (fileName, fileSize, fileDate, cacheDate, thumbnail) VALUES (:fileName, :fileSize, :fileDate, DATETIME('now'), :thumbnail);");
+				query.bindValue(":fileName", szFileName);
+				query.bindValue(":fileSize", fileInfo.size());
+				query.bindValue(":fileDate", fileInfo.birthTime());
+				query.bindValue(":thumbnail", image2Blob(m_thumbnail));
+
+				if(!query.exec())
+					qDebug() << query.lastError().text();
 			}
 		}
 	}

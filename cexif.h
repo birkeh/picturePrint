@@ -622,9 +622,10 @@ public:
 
 	 \fn fromFile
 	 \param szFileName
+	 \param thumbnailOnly
 	 \return bool
 	*/
-	bool					fromFile(const QString& szFileName);
+	bool					fromFile(const QString& szFileName, bool thumbnailOnly = false);
 
 	/*!
 	 \brief

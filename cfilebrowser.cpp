@@ -121,7 +121,7 @@ void cFileBrowser::addFile(const QFileInfo& fileInfo)
 	cEXIF*		lpExif	= new cEXIF(&m_exifTAGList, &m_exifCompressionList, &m_exifLightSourceList, &m_exifFlashList, &m_iptcTagList, &m_xmpTagList);
 	lpExif->setCacheDB(&m_cacheDB);
 
-	if(!lpExif->fromFile(fileInfo.filePath()))
+	if(!lpExif->fromFile(fileInfo.filePath(), true))
 	{
 		delete lpExif;
 		return;
