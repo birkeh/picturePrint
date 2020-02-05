@@ -1,5 +1,4 @@
 #include "cfilebrowser.h"
-#include "cfileviewer.h"
 
 #include "ui_cfilebrowser.h"
 
@@ -41,6 +40,9 @@ cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpIm
 
 	m_lpFileListModel	= new QStandardItemModel(0, 0);
 	ui->m_lpFileList->setModel(m_lpFileListModel);
+
+	m_lpSelectedListModel	= new QStandardItemModel(0, 0);
+	ui->m_lpSelectedList->setModel(m_lpSelectedListModel);
 
 	m_cacheDB	= QSqlDatabase::addDatabase("QSQLITE", "cacheDB");
 	m_cacheDB.setHostName("localhost");
@@ -116,6 +118,35 @@ void cFileBrowser::onDirectoryChanged(const QItemSelection& selected, const QIte
 	m_working	= false;
 }
 
+void cFileBrowser::onCountChanged(const QString& fileName, QPixmap pixmap, int count)
+{
+	cFileViewer*	lpFileViewer;
+
+	for(int x = 0;x < m_lpSelectedListModel->rowCount();x++)
+	{
+		lpFileViewer	= static_cast<cFileViewer*>(ui->m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(x, 0)));
+		if(lpFileViewer)
+		{
+			if(lpFileViewer->fileName() == fileName)
+			{
+				if(count)
+					lpFileViewer->setCount(count);
+				else
+					m_lpSelectedListModel->removeRow(x);
+				return;
+			}
+		}
+	}
+
+	QStandardItem*	lpItem			= new QStandardItem("");
+	cFileViewer*	lpFileViewer1	= new cFileViewer;
+	lpFileViewer1->setImage(fileName, pixmap);
+	lpFileViewer1->setCount(count);
+
+	m_lpSelectedListModel->appendRow(lpItem);
+	ui->m_lpSelectedList->setIndexWidget(m_lpSelectedListModel->index(m_lpSelectedListModel->rowCount()-1, 0), lpFileViewer1);
+}
+
 void cFileBrowser::addFile(const QFileInfo& fileInfo)
 {
 	cEXIF*		lpExif	= new cEXIF(&m_exifTAGList, &m_exifCompressionList, &m_exifLightSourceList, &m_exifFlashList, &m_iptcTagList, &m_xmpTagList);
@@ -141,5 +172,6 @@ void cFileBrowser::addFile(const QFileInfo& fileInfo)
 	m_lpFileListModel->appendRow(lpItem);
 	ui->m_lpFileList->setIndexWidget(m_lpFileListModel->index(m_lpFileListModel->rowCount()-1, 0), lpFileViewer);
 
+	connect(lpFileViewer,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChanged);
 	delete lpExif;
 }

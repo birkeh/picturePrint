@@ -4,6 +4,8 @@
 
 #include "common.h"
 #include "cexif.h"
+#include "cfileviewer.h"
+
 #include <QWidget>
 
 #include <QFileSystemModel>
@@ -32,6 +34,7 @@ private:
 	Ui::cFileBrowser*		ui;
 	QFileSystemModel		m_directoryListModel;
 	QStandardItemModel*		m_lpFileListModel;
+	QStandardItemModel*		m_lpSelectedListModel;
 	QProgressBar*			m_lpProgressBar;
 	QList<IMAGEFORMAT>*		m_lpImageFormats;
 
@@ -52,6 +55,7 @@ private:
 
 private slots:
 	void					onDirectoryChanged(const QItemSelection& selected, const QItemSelection& deselected);
+	void					onCountChanged(const QString& fileName, QPixmap pixmap, int count);
 };
 
 #endif // CFILEBROWSER_H
