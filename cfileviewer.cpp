@@ -1,3 +1,8 @@
+/*!
+ \file cfileviewer.cpp
+
+*/
+
 #include "common.h"
 
 #include "cfileviewer.h"

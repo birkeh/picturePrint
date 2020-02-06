@@ -80,4 +80,5 @@ RESOURCES += \
     qdarkstyle/style.qrc
 
 DISTFILES += \
+    Doxyfile \
     picturePrint.db

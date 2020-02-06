@@ -1,3 +1,8 @@
+/*!
+ \file common.h
+
+*/
+
 #ifndef COMMON_H
 #define COMMON_H
 
@@ -18,13 +23,18 @@
 #endif
 
 
+/*!
+ \brief
+
+ \class tagIMAGEFORMAT common.h "common.h"
+*/
 typedef struct tagIMAGEFORMAT
 {
-	QString	shortName;
-	QString	description;
-	QString	extension;
-	bool	read;
-	bool	write;
+	QString	shortName; /*!< TODO: describe */
+	QString	description; /*!< TODO: describe */
+	QString	extension; /*!< TODO: describe */
+	bool	read; /*!< TODO: describe */
+	bool	write; /*!< TODO: describe */
 /*!
  \brief
 
@@ -32,12 +42,46 @@ typedef struct tagIMAGEFORMAT
 } IMAGEFORMAT;
 
 
+/*!
+ \brief
+
+ \fn generateReadList
+ \param imageFormats
+ \return QStringList
+*/
 QStringList		generateReadList(const QList<IMAGEFORMAT>& imageFormats);
+/*!
+ \brief
+
+ \fn generateWriteList
+ \param imageFormats
+ \return QStringList
+*/
 QStringList		generateWriteList(const QList<IMAGEFORMAT>& imageFormats);
 
+/*!
+ \brief
+
+ \fn blob2Image
+ \param ba
+ \return QImage
+*/
 QImage			blob2Image(const QByteArray& ba);
+/*!
+ \brief
+
+ \fn image2Blob
+ \param image
+ \return QByteArray
+*/
 QByteArray		image2Blob(const QImage& image);
 
+/*!
+ \brief
+
+ \fn userDir
+ \return QString
+*/
 QString			userDir();
 
 

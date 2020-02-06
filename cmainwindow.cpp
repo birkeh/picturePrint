@@ -1,3 +1,8 @@
+/*!
+ \file cmainwindow.cpp
+
+*/
+
 #include "common.h"
 
 #include "cmainwindow.h"

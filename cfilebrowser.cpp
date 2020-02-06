@@ -1,3 +1,8 @@
+/*!
+ \file cfilebrowser.cpp
+
+*/
+
 #include "cfilebrowser.h"
 
 #include "ui_cfilebrowser.h"

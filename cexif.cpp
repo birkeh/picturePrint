@@ -3,6 +3,11 @@
 
 */
 
+/*!
+ \file cexif.cpp
+
+*/
+
 #include "cexif.h"
 
 #include "common.h"
