@@ -123,7 +123,7 @@ void cFileBrowser::onDirectoryChanged(const QItemSelection& selected, const QIte
 	m_working	= false;
 }
 
-void cFileBrowser::onCountChanged(const QString& fileName, QPixmap pixmap, int count)
+void cFileBrowser::onCountChanged(cFileViewer* fileViewer)
 {
 	cFileViewer*	lpFileViewer;
 
@@ -132,10 +132,14 @@ void cFileBrowser::onCountChanged(const QString& fileName, QPixmap pixmap, int c
 		lpFileViewer	= static_cast<cFileViewer*>(ui->m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(x, 0)));
 		if(lpFileViewer)
 		{
-			if(lpFileViewer->fileName() == fileName)
+			if(lpFileViewer->fileName() == fileViewer->fileName())
 			{
-				if(count)
-					lpFileViewer->setCount(count);
+				if(fileViewer->count())
+				{
+					disconnect(lpFileViewer,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
+					lpFileViewer->setCount(fileViewer->count());
+					connect(lpFileViewer,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
+				}
 				else
 					m_lpSelectedListModel->removeRow(x);
 				return;
@@ -145,11 +149,34 @@ void cFileBrowser::onCountChanged(const QString& fileName, QPixmap pixmap, int c
 
 	QStandardItem*	lpItem			= new QStandardItem("");
 	cFileViewer*	lpFileViewer1	= new cFileViewer;
-	lpFileViewer1->setImage(fileName, pixmap);
-	lpFileViewer1->setCount(count);
+	lpFileViewer1->setImage(fileViewer->fileName(), fileViewer->image());
+	lpFileViewer1->setCount(fileViewer->count());
 
 	m_lpSelectedListModel->appendRow(lpItem);
 	ui->m_lpSelectedList->setIndexWidget(m_lpSelectedListModel->index(m_lpSelectedListModel->rowCount()-1, 0), lpFileViewer1);
+
+	connect(lpFileViewer1,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
+}
+
+void cFileBrowser::onCountChangedSelected(cFileViewer* fileViewer)
+{
+	cFileViewer*	lpFileViewer;
+
+	for(int x = 0;x < m_lpFileListModel->rowCount();x++)
+	{
+		lpFileViewer	= static_cast<cFileViewer*>(ui->m_lpFileList->indexWidget(m_lpFileListModel->index(x, 0)));
+		if(lpFileViewer)
+		{
+			if(lpFileViewer->fileName() == fileViewer->fileName())
+			{
+				disconnect(lpFileViewer,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
+				lpFileViewer->setCount(fileViewer->count());
+				connect(lpFileViewer,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
+
+				return;
+			}
+		}
+	}
 }
 
 void cFileBrowser::addFile(const QFileInfo& fileInfo)
@@ -171,12 +198,28 @@ void cFileBrowser::addFile(const QFileInfo& fileInfo)
 	painter.drawImage((THUMBNAIL_WIDTH-thumbnail.width())/2, 0, thumbnail);
 
 	QStandardItem*	lpItem			= new QStandardItem("");
-	cFileViewer*	lpFileViewer	= new cFileViewer;
-	lpFileViewer->setImage(fileInfo.filePath(), QPixmap::fromImage(thumb));
+	cFileViewer*	lpFileViewerNew	= new cFileViewer;
+	lpFileViewerNew->setImage(fileInfo.filePath(), QPixmap::fromImage(thumb));
 
 	m_lpFileListModel->appendRow(lpItem);
-	ui->m_lpFileList->setIndexWidget(m_lpFileListModel->index(m_lpFileListModel->rowCount()-1, 0), lpFileViewer);
+	ui->m_lpFileList->setIndexWidget(m_lpFileListModel->index(m_lpFileListModel->rowCount()-1, 0), lpFileViewerNew);
 
-	connect(lpFileViewer,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChanged);
+	cFileViewer*	lpFileViewer;
+
+	for(int x = 0;x < m_lpSelectedListModel->rowCount();x++)
+	{
+		lpFileViewer	= static_cast<cFileViewer*>(ui->m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(x, 0)));
+		if(lpFileViewer)
+		{
+			if(lpFileViewer->fileName() == lpFileViewerNew->fileName())
+			{
+				lpFileViewerNew->setCount(lpFileViewer->count());
+				break;
+			}
+		}
+	}
+
+	connect(lpFileViewerNew,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChanged);
+
 	delete lpExif;
 }

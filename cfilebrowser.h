@@ -54,25 +54,25 @@ public:
 	~cFileBrowser();
 
 private:
-	Ui::cFileBrowser*		ui; /*!< TODO: describe */
-	QFileSystemModel		m_directoryListModel; /*!< TODO: describe */
-	QStandardItemModel*		m_lpFileListModel; /*!< TODO: describe */
-	QStandardItemModel*		m_lpSelectedListModel; /*!< TODO: describe */
-	QProgressBar*			m_lpProgressBar; /*!< TODO: describe */
-	QList<IMAGEFORMAT>*		m_lpImageFormats; /*!< TODO: describe */
+	Ui::cFileBrowser*		ui;						/*!< TODO: describe */
+	QFileSystemModel		m_directoryListModel;	/*!< TODO: describe */
+	QStandardItemModel*		m_lpFileListModel;		/*!< TODO: describe */
+	QStandardItemModel*		m_lpSelectedListModel;	/*!< TODO: describe */
+	QProgressBar*			m_lpProgressBar;		/*!< TODO: describe */
+	QList<IMAGEFORMAT>*		m_lpImageFormats;		/*!< TODO: describe */
 
-	cEXIFTagList			m_exifTAGList; /*!< TODO: describe */
-	cEXIFCompressionList	m_exifCompressionList; /*!< TODO: describe */
-	cEXIFLightSourceList	m_exifLightSourceList; /*!< TODO: describe */
-	cEXIFFlashList			m_exifFlashList; /*!< TODO: describe */
+	cEXIFTagList			m_exifTAGList;			/*!< TODO: describe */
+	cEXIFCompressionList	m_exifCompressionList;	/*!< TODO: describe */
+	cEXIFLightSourceList	m_exifLightSourceList;	/*!< TODO: describe */
+	cEXIFFlashList			m_exifFlashList;		/*!< TODO: describe */
 
-	cIPTCTagList			m_iptcTagList; /*!< TODO: describe */
+	cIPTCTagList			m_iptcTagList;			/*!< TODO: describe */
 
-	cXMPTagList				m_xmpTagList; /*!< TODO: describe */
+	cXMPTagList				m_xmpTagList;			/*!< TODO: describe */
 
-	QSqlDatabase			m_cacheDB; /*!< TODO: describe */
+	QSqlDatabase			m_cacheDB;				/*!< TODO: describe */
 
-	bool					m_working; /*!< TODO: describe */
+	bool					m_working;				/*!< TODO: describe */
 
 	/*!
 	 \brief
@@ -95,11 +95,16 @@ private slots:
 	 \brief
 
 	 \fn onCountChanged
-	 \param fileName
-	 \param pixmap
-	 \param count
+	 \param fileViewer
 	*/
-	void					onCountChanged(const QString& fileName, QPixmap pixmap, int count);
+	void					onCountChanged(cFileViewer* fileViewer);
+	/*!
+	 \brief
+
+	 \fn onCountChangedSelected
+	 \param fileViewer
+	*/
+	void					onCountChangedSelected(cFileViewer* fileViewer);
 };
 
 #endif // CFILEBROWSER_H

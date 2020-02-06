@@ -101,7 +101,7 @@ signals:
 	 \param pixmap
 	 \param i
 	*/
-	void				countChanged(const QString& fileName, QPixmap pixmap, int i);
+	void				countChanged(cFileViewer* fileViewer);
 };
 
 Q_DECLARE_METATYPE(cFileViewer*)

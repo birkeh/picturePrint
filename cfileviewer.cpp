@@ -62,9 +62,9 @@ qint32 cFileViewer::count()
 	return(ui->m_lpCount->value());
 }
 
-void cFileViewer::onCountChanged(int i)
+void cFileViewer::onCountChanged(int /*i*/)
 {
-	emit countChanged(m_fileName, image(), i);
+	emit countChanged(this);
 }
 
 cFileViewer* cFileViewerList::add(const QString& fileName, const QPixmap& image)
