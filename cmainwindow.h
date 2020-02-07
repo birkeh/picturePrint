@@ -42,12 +42,13 @@ public:
 
 private:
 	Ui::cMainWindow*				ui; /*!< TODO: describe */
-	cSplashScreen*					m_lpSplashScreen; /*!< TODO: describe */
-	QProgressBar*					m_lpProgressBar; /*!< TODO: describe */
+	cSplashScreen*					m_lpSplashScreen;		/*!< TODO: describe */
+	QProgressBar*					m_lpProgressBar;		/*!< TODO: describe */
 
-	cFileBrowser*					m_lpFileBrowser; /*!< TODO: describe */
+	cFileBrowser*					m_lpFileBrowser;		/*!< TODO: describe */
+	QStandardItemModel*				m_lpSelectedListModel;	/*!< TODO: describe */
 
-	QList<IMAGEFORMAT>				m_imageFormats; /*!< TODO: describe */
+	QList<IMAGEFORMAT>				m_imageFormats;			/*!< TODO: describe */
 
 	/*!
 	 \brief
@@ -93,6 +94,13 @@ private:
 	void							addImageFormat(const QString& shortName, const QString& description, const QString& extension, QList<QByteArray>& readList, QList<QByteArray>& writeList);
 
 protected:
+	/*!
+	 \brief
+
+	 \fn showEvent
+	 \param event
+	*/
+	void							showEvent(QShowEvent *event);
 	/*!
 	 \brief
 

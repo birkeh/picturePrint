@@ -17,16 +17,21 @@
 
 #include <QPainter>
 
-#include <QElapsedTimer>
+#include <QSettings>
+#include <QStandardPaths>
+
+#include <QTimer>
 
 #include <QSqlQuery>
 #include <QSqlError>
 
 
-cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpImageFormats, QWidget *parent) :
+cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpImageFormats, QListView* lpSelectedList, QStandardItemModel* lpSelectedListModel, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::cFileBrowser),
+	m_lpSelectedList(lpSelectedList),
 	m_lpFileListModel(nullptr),
+	m_lpSelectedListModel(lpSelectedListModel),
 	m_lpProgressBar(lpProgressBar),
 	m_lpImageFormats(lpImageFormats),
 	m_working(false)
@@ -35,8 +40,7 @@ cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpIm
 
 	ui->m_lpFileList->setGridSize(QSize(THUMBNAIL_WIDTH+2+4, THUMBNAIL_WIDTH+34+4));
 
-//	m_directoryListModel.setRootPath("");
-	m_directoryListModel.setRootPath("C:/Users/birkeh/Pictures");
+	m_directoryListModel.setRootPath("");
 	m_directoryListModel.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
 	ui->m_lpDirectoryList->setModel(&m_directoryListModel);
 	ui->m_lpDirectoryList->setAnimated(false);
@@ -45,9 +49,6 @@ cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpIm
 
 	m_lpFileListModel	= new QStandardItemModel(0, 0);
 	ui->m_lpFileList->setModel(m_lpFileListModel);
-
-	m_lpSelectedListModel	= new QStandardItemModel(0, 0);
-	ui->m_lpSelectedList->setModel(m_lpSelectedListModel);
 
 	m_cacheDB	= QSqlDatabase::addDatabase("QSQLITE", "cacheDB");
 	m_cacheDB.setHostName("localhost");
@@ -83,6 +84,18 @@ cFileBrowser::cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpIm
 		}
 	}
 
+	QSettings	settings;
+	QStringList	picturesPathList	= QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+	QString		picturesPath;
+
+	if(picturesPathList.count())
+		picturesPath	= picturesPathList[0];
+
+	QString		filePath		= settings.value("lastPath", QVariant::fromValue(picturesPath)).toString();
+	QModelIndex	index			= m_directoryListModel.index(filePath);
+	ui->m_lpDirectoryList->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
+	directorySelected(filePath);
+
 	connect(ui->m_lpDirectoryList->selectionModel(),	&QItemSelectionModel::selectionChanged,	this,	&cFileBrowser::onDirectoryChanged);
 }
 
@@ -96,31 +109,7 @@ cFileBrowser::~cFileBrowser()
 
 void cFileBrowser::onDirectoryChanged(const QItemSelection& selected, const QItemSelection& /*deselected*/)
 {
-	m_working	= true;
-
-	m_lpProgressBar->setVisible(true);
-	ui->m_lpDirectoryList->setEnabled(false);
-
-	m_lpFileListModel->clear();
-
-	QFileInfo		info	= m_directoryListModel.fileInfo(selected.indexes()[0]);
-	QDir			dir(info.filePath());
-
-	QFileInfoList	list	= dir.entryInfoList(generateReadList(*m_lpImageFormats), QDir::Files, QDir::Name);
-
-	m_lpProgressBar->setRange(0, list.count());
-
-	for(int x = 0;x < list.count();x++)
-	{
-		addFile(list[x]);
-		m_lpProgressBar->setValue(x);
-		qApp->processEvents();
-	}
-
-	ui->m_lpDirectoryList->setEnabled(true);
-	m_lpProgressBar->setVisible(false);
-
-	m_working	= false;
+	directorySelected(m_directoryListModel.fileInfo(selected.indexes()[0]).filePath());
 }
 
 void cFileBrowser::onCountChanged(cFileViewer* fileViewer)
@@ -129,7 +118,7 @@ void cFileBrowser::onCountChanged(cFileViewer* fileViewer)
 
 	for(int x = 0;x < m_lpSelectedListModel->rowCount();x++)
 	{
-		lpFileViewer	= static_cast<cFileViewer*>(ui->m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(x, 0)));
+		lpFileViewer	= static_cast<cFileViewer*>(m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(x, 0)));
 		if(lpFileViewer)
 		{
 			if(lpFileViewer->fileName() == fileViewer->fileName())
@@ -153,7 +142,7 @@ void cFileBrowser::onCountChanged(cFileViewer* fileViewer)
 	lpFileViewer1->setCount(fileViewer->count());
 
 	m_lpSelectedListModel->appendRow(lpItem);
-	ui->m_lpSelectedList->setIndexWidget(m_lpSelectedListModel->index(m_lpSelectedListModel->rowCount()-1, 0), lpFileViewer1);
+	m_lpSelectedList->setIndexWidget(m_lpSelectedListModel->index(m_lpSelectedListModel->rowCount()-1, 0), lpFileViewer1);
 
 	connect(lpFileViewer1,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
 }
@@ -177,6 +166,37 @@ void cFileBrowser::onCountChangedSelected(cFileViewer* fileViewer)
 			}
 		}
 	}
+}
+
+void cFileBrowser::directorySelected(const QString& filePath)
+{
+	m_working	= true;
+
+	m_lpProgressBar->setVisible(true);
+	ui->m_lpDirectoryList->setEnabled(false);
+
+	m_lpFileListModel->clear();
+
+	QDir			dir(filePath);
+
+	QFileInfoList	list	= dir.entryInfoList(generateReadList(*m_lpImageFormats), QDir::Files, QDir::Name);
+
+	m_lpProgressBar->setRange(0, list.count());
+
+	for(int x = 0;x < list.count();x++)
+	{
+		addFile(list[x]);
+		m_lpProgressBar->setValue(x);
+		qApp->processEvents();
+	}
+
+	ui->m_lpDirectoryList->setEnabled(true);
+	m_lpProgressBar->setVisible(false);
+
+	QSettings	settings;
+	settings.setValue("lastPath", QVariant::fromValue(filePath));
+
+	m_working	= false;
 }
 
 void cFileBrowser::addFile(const QFileInfo& fileInfo)
@@ -208,7 +228,7 @@ void cFileBrowser::addFile(const QFileInfo& fileInfo)
 
 	for(int x = 0;x < m_lpSelectedListModel->rowCount();x++)
 	{
-		lpFileViewer	= static_cast<cFileViewer*>(ui->m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(x, 0)));
+		lpFileViewer	= static_cast<cFileViewer*>(m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(x, 0)));
 		if(lpFileViewer)
 		{
 			if(lpFileViewer->fileName() == lpFileViewerNew->fileName())

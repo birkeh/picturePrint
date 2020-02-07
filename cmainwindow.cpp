@@ -34,6 +34,11 @@ cMainWindow::~cMainWindow()
 	delete ui;
 }
 
+void cMainWindow::showEvent(QShowEvent *event)
+{
+	QMainWindow::showEvent(event);
+}
+
 void cMainWindow::closeEvent(QCloseEvent *event)
 {
 //	if(m_working)
@@ -70,11 +75,11 @@ void cMainWindow::initUI()
 	m_lpProgressBar->setVisible(false);
 	ui->m_lpStatusBar->addPermanentWidget(m_lpProgressBar);
 
-	m_lpFileBrowser	= new cFileBrowser(m_lpProgressBar, &m_imageFormats, this);
-	ui->m_lpMainTab->addTab(m_lpFileBrowser, "Files");
+	m_lpSelectedListModel	= new QStandardItemModel(0, 0);
+	ui->m_lpSelectedList->setModel(m_lpSelectedListModel);
 
-//	m_lpFileListModel	= new QStandardItemModel;
-//	ui->m_lpFileList->setModel(m_lpFileListModel);
+	m_lpFileBrowser	= new cFileBrowser(m_lpProgressBar, &m_imageFormats, ui->m_lpSelectedList, m_lpSelectedListModel, this);
+	ui->m_lpMainTab->addTab(m_lpFileBrowser, "Files");
 
 	if(!settings.value("main/maximized").toBool())
 	{

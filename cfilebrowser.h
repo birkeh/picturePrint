@@ -13,6 +13,7 @@
 
 #include <QWidget>
 
+#include <QListView>
 #include <QFileSystemModel>
 #include <QItemSelection>
 #include <QStandardItemModel>
@@ -45,7 +46,7 @@ public:
 	 \param lpImageFormats
 	 \param parent
 	*/
-	explicit cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpImageFormats, QWidget *parent = nullptr);
+	explicit cFileBrowser(QProgressBar* lpProgressBar, QList<IMAGEFORMAT>* lpImageFormats, QListView* lpSelectedList, QStandardItemModel* lpSelectedListModel, QWidget *parent = nullptr);
 	/*!
 	 \brief
 
@@ -55,6 +56,7 @@ public:
 
 private:
 	Ui::cFileBrowser*		ui;						/*!< TODO: describe */
+	QListView*				m_lpSelectedList;		/*!< TODO: describe */
 	QFileSystemModel		m_directoryListModel;	/*!< TODO: describe */
 	QStandardItemModel*		m_lpFileListModel;		/*!< TODO: describe */
 	QStandardItemModel*		m_lpSelectedListModel;	/*!< TODO: describe */
@@ -74,6 +76,13 @@ private:
 
 	bool					m_working;				/*!< TODO: describe */
 
+	/*!
+	 \brief
+
+	 \fn directorySelected
+	 \param filePath
+	*/
+	void					directorySelected(const QString& filePath);
 	/*!
 	 \brief
 
