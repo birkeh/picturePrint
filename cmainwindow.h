@@ -11,6 +11,7 @@
 #include "common.h"
 
 #include "cfilebrowser.h"
+#include "cprint.h"
 
 #include <QMainWindow>
 #include <QCloseEvent>
@@ -46,6 +47,7 @@ private:
 	QProgressBar*					m_lpProgressBar;		/*!< TODO: describe */
 
 	cFileBrowser*					m_lpFileBrowser;		/*!< TODO: describe */
+	cPrint*							m_lpPrint;				/*!< TODO: describe */
 	QStandardItemModel*				m_lpSelectedListModel;	/*!< TODO: describe */
 
 	QList<IMAGEFORMAT>				m_imageFormats;			/*!< TODO: describe */

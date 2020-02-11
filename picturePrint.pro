@@ -5,6 +5,7 @@ QMAKE_TARGET_DESCRIPTION = picturePrint
 QMAKE_TARGET_COPYRIGHT = (c) 2020 WIN-DESIGN
 
 QT       += core gui sql multimedia concurrent
+qtHaveModule(printsupport): QT += printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -49,6 +50,7 @@ SOURCES += \
     cfileviewer.cpp \
     cimage.cpp \
     common.cpp \
+    cprint.cpp \
     csplashscreen.cpp \
     main.cpp \
     cmainwindow.cpp
@@ -60,12 +62,14 @@ HEADERS += \
     cimage.h \
     cmainwindow.h \
     common.h \
+    cprint.h \
     csplashscreen.h
 
 FORMS += \
     cfilebrowser.ui \
     cfileviewer.ui \
-    cmainwindow.ui
+    cmainwindow.ui \
+    cprint.ui
 
 TRANSLATIONS += \
     picturePrint_de_AT.ts
