@@ -14,6 +14,7 @@
 #include <QStandardItemModel>
 
 #include <QPrinter>
+#include <QPrintPreviewWidget>
 
 
 namespace Ui {
@@ -45,14 +46,23 @@ public:
 	~cPrint();
 
 private:
-	Ui::cPrint*			ui;						/*!< TODO: describe */
-	QProgressBar*		m_lpProgressBar;		/*!< TODO: describe */
-	QListView*			m_lpSelectedList;		/*!< TODO: describe */
-	QStandardItemModel*	m_lpSelectedListModel;	/*!< TODO: describe */
+	Ui::cPrint*				ui;						/*!< TODO: describe */
+	QProgressBar*			m_lpProgressBar;		/*!< TODO: describe */
+	QListView*				m_lpSelectedList;		/*!< TODO: describe */
+	QStandardItemModel*		m_lpSelectedListModel;	/*!< TODO: describe */
 
-	QPrinter*			m_lpPrinter;			/*!< TODO: describe */
+	QPrinter*				m_lpPrinter;			/*!< TODO: describe */
+	QPrintPreviewWidget*	m_lpPrintPreviewWidget;	/*!< TODO: describe */
 
 private slots:
+	/*!
+	 \brief
+
+	 \fn onPrinterChanged
+	 \param printer
+	*/
+	void					onPrinterChanged(const QString& printer);
+
 	/*!
 	 \brief
 
@@ -62,9 +72,23 @@ private slots:
 	/*!
 	 \brief
 
+	 \fn onPrintPreview
+	*/
+	void					onPrintPreview();
+	/*!
+	 \brief
+
 	 \fn onPrint
 	*/
 	void					onPrint();
+
+	/*!
+	 \brief
+
+	 \fn onPaintRequested
+	 \param printer
+	*/
+	void					onPaintRequested(QPrinter* printer);
 };
 
 #endif // CPRINT_H

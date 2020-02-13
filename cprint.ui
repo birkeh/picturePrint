@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>578</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,22 +15,40 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
      <item>
-      <widget class="QComboBox" name="m_lpPrinterSelect"/>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
+      <widget class="QSplitter" name="m_lpSplitter">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
+       <widget class="QWidget" name="">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QComboBox" name="m_lpPrinterSelect"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="m_lpPrinterMakeAndModel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -38,6 +56,13 @@
         <widget class="QPushButton" name="m_lpPrinterSettings">
          <property name="text">
           <string>printer settings...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_lpPrintPreview">
+         <property name="text">
+          <string>preview</string>
          </property>
         </widget>
        </item>
