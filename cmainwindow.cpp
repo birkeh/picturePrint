@@ -28,6 +28,8 @@ cMainWindow::cMainWindow(cSplashScreen* lpSplashScreen, QWidget *parent)
 
 	initUI();
 	createActions();
+
+	ui->m_lpMainTab->setCurrentIndex(1);
 }
 
 cMainWindow::~cMainWindow()

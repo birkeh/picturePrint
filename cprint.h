@@ -46,13 +46,16 @@ public:
 	~cPrint();
 
 private:
-	Ui::cPrint*				ui;						/*!< TODO: describe */
-	QProgressBar*			m_lpProgressBar;		/*!< TODO: describe */
-	QListView*				m_lpSelectedList;		/*!< TODO: describe */
-	QStandardItemModel*		m_lpSelectedListModel;	/*!< TODO: describe */
+	Ui::cPrint*								ui;						/*!< TODO: describe */
+	QProgressBar*							m_lpProgressBar;		/*!< TODO: describe */
+	QListView*								m_lpSelectedList;		/*!< TODO: describe */
+	QStandardItemModel*						m_lpSelectedListModel;	/*!< TODO: describe */
 
-	QPrinter*				m_lpPrinter;			/*!< TODO: describe */
-	QPrintPreviewWidget*	m_lpPrintPreviewWidget;	/*!< TODO: describe */
+	QPrinter*								m_lpPrinter;			/*!< TODO: describe */
+	QPrintPreviewWidget*					m_lpPrintPreviewWidget;	/*!< TODO: describe */
+
+	QMap<QPrinter::PrinterState, QString>	m_printerStateText;		/*!< TODO: describe */
+	QMap<QPrinter::PaperSource, QString>	m_printerPaperSource;	/*!< TODO: describe */
 
 private slots:
 	/*!
@@ -61,26 +64,26 @@ private slots:
 	 \fn onPrinterChanged
 	 \param printer
 	*/
-	void					onPrinterChanged(const QString& printer);
+	void									onPrinterChanged(const QString& printer);
 
 	/*!
 	 \brief
 
 	 \fn onPrinterSettings
 	*/
-	void					onPrinterSettings();
+	void									onPrinterSettings();
 	/*!
 	 \brief
 
 	 \fn onPrintPreview
 	*/
-	void					onPrintPreview();
+	void									onPrintPreview();
 	/*!
 	 \brief
 
 	 \fn onPrint
 	*/
-	void					onPrint();
+	void									onPrint();
 
 	/*!
 	 \brief
@@ -88,7 +91,7 @@ private slots:
 	 \fn onPaintRequested
 	 \param printer
 	*/
-	void					onPaintRequested(QPrinter* printer);
+	void									onPaintRequested(QPrinter* printer);
 };
 
 #endif // CPRINT_H

@@ -29,6 +29,29 @@ cPrint::cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandard
 {
 	ui->setupUi(this);
 
+	m_printerStateText.insert(QPrinter::Idle,				tr("idle"));
+	m_printerStateText.insert(QPrinter::Active,				tr("Active"));
+	m_printerStateText.insert(QPrinter::Aborted,			tr("Aborted"));
+	m_printerStateText.insert(QPrinter::Error,				tr("Error"));
+
+	m_printerPaperSource.insert(QPrinter::Auto,				tr("Auto"));
+	m_printerPaperSource.insert(QPrinter::Cassette,			tr("Cassette"));
+	m_printerPaperSource.insert(QPrinter::Envelope,			tr("Envelope"));
+	m_printerPaperSource.insert(QPrinter::EnvelopeManual,	tr("EnvelopeManual"));
+	m_printerPaperSource.insert(QPrinter::FormSource,		tr("FormSource"));
+	m_printerPaperSource.insert(QPrinter::LargeCapacity,	tr("LargeCapacity"));
+	m_printerPaperSource.insert(QPrinter::LargeFormat,		tr("LargeFormat"));
+	m_printerPaperSource.insert(QPrinter::Lower,			tr("Lower"));
+	m_printerPaperSource.insert(QPrinter::MaxPageSource,	tr("MaxPageSource"));
+	m_printerPaperSource.insert(QPrinter::Middle,			tr("Middle"));
+	m_printerPaperSource.insert(QPrinter::Manual,			tr("Manual"));
+	m_printerPaperSource.insert(QPrinter::OnlyOne,			tr("OnlyOne"));
+	m_printerPaperSource.insert(QPrinter::Tractor,			tr("Tractor"));
+	m_printerPaperSource.insert(QPrinter::SmallFormat,		tr("SmallFormat"));
+	m_printerPaperSource.insert(QPrinter::Upper,			tr("Upper"));
+	m_printerPaperSource.insert(QPrinter::CustomSource,		tr("CustomSource"));
+	m_printerPaperSource.insert(QPrinter::LastPaperSource,	tr("LastPaperSource"));
+
 	m_lpPrinter	= new QPrinter;
 
 	QString		defaultPrinter		= QPrinterInfo::defaultPrinterName();
@@ -67,18 +90,29 @@ void cPrint::onPrinterChanged(const QString& printer)
 {
 	m_lpPrinter->setPrinterName(printer);
 
-	QPrinterInfo	printerInfo(*m_lpPrinter);
+	QPrinterInfo					printerInfo(*m_lpPrinter);
+	QList<QPageSize>				pageSizes		= printerInfo.supportedPageSizes();
+	QList<QPrinter::PaperSource>	paperSources	= m_lpPrinter->supportedPaperSources();
+
+	ui->m_lpPrinterStatus->setText(m_printerStateText[printerInfo.state()]);
 
 	ui->m_lpPrinterMakeAndModel->setText(printerInfo.makeAndModel());
+
+	for(int x = 0;x < pageSizes.count();x++)
+		ui->m_lpPaperSize->addItem(pageSizes[x].name());
+	ui->m_lpPaperSize->setCurrentText(QPageSize::name(static_cast<QPageSize::PageSizeId>(m_lpPrinter->pageSize())));
+
+	ui->m_lpPrinterLocation->setText(printerInfo.location());
+
+	for(int x = 0;x < paperSources.count();x++)
+		ui->m_lpPaperSource->addItem(m_printerPaperSource[paperSources[x]]);
+	ui->m_lpPaperSource->setCurrentText(m_printerPaperSource[m_lpPrinter->paperSource()]);
 }
 
 void cPrint::onPrinterSettings()
 {
 	QPrintDialog	printDialog(m_lpPrinter);
 	printDialog.exec();
-
-//	QPageSetupDialog	pageSetupDialog(m_lpPrinter);
-//	pageSetupDialog.exec();
 }
 
 void cPrint::onPrintPreview()
