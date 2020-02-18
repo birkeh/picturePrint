@@ -72,7 +72,7 @@ void cMainWindow::initUI()
 
 	ui->setupUi(this);
 
-	QIcon::setThemeName("TangoMFK");
+	QIcon::setThemeName("arc");
 
 	m_lpProgressBar			= new QProgressBar(this);
 	m_lpProgressBar->setVisible(false);

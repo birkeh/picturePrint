@@ -67,8 +67,14 @@ cPrint::cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandard
 	m_lpPrintPreviewWidget->setObjectName(QString::fromUtf8("m_lpPrintPreviewWidget"));
 	ui->m_lpSplitter->insertWidget(0, m_lpPrintPreviewWidget);
 
+	const QIcon	zoomOutIcon			= QIcon::fromTheme("document-new");
+	const QIcon	zoomInIcon			= QIcon::fromTheme("zoom-in");
+
+	ui->m_lpZoomOut->setIcon(zoomOutIcon);
+	ui->m_lpZoomIn->setIcon(zoomInIcon);
+
 	connect(ui->m_lpPrinterSelect,		&QComboBox::currentTextChanged,			this,	&cPrint::onPrinterChanged);
-	connect(ui->m_lpPrinterSettings,	&QPushButton::clicked,					this,	&cPrint::onPrinterSettings);
+	connect(ui->m_lpPrinterProperties,	&QPushButton::clicked,					this,	&cPrint::onPrinterSettings);
 	connect(ui->m_lpPrintPreview,		&QPushButton::clicked,					this,	&cPrint::onPrintPreview);
 	connect(ui->m_lpPrint,				&QPushButton::clicked,					this,	&cPrint::onPrint);
 
@@ -89,6 +95,9 @@ cPrint::~cPrint()
 void cPrint::onPrinterChanged(const QString& printer)
 {
 	m_lpPrinter->setPrinterName(printer);
+
+	ui->m_lpPaperSize->clear();
+	ui->m_lpPaperSource->clear();
 
 	QPrinterInfo					printerInfo(*m_lpPrinter);
 	QList<QPageSize>				pageSizes		= printerInfo.supportedPageSizes();
