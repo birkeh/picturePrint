@@ -197,15 +197,59 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QToolButton" name="m_lpZoomOut">
+         <property name="toolTip">
+          <string>zoom out</string>
+         </property>
+         <property name="statusTip">
+          <string>zoom out</string>
+         </property>
          <property name="text">
-          <string>...</string>
+          <string>zoom out</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_lpZoomFit">
+         <property name="toolTip">
+          <string>zoo to fit</string>
+         </property>
+         <property name="statusTip">
+          <string>zoom to fit</string>
+         </property>
+         <property name="text">
+          <string>zoom to fit</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_lpZoomOriginal">
+         <property name="toolTip">
+          <string>zoom original</string>
+         </property>
+         <property name="statusTip">
+          <string>zoom original</string>
+         </property>
+         <property name="text">
+          <string>zoom original</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QToolButton" name="m_lpZoomIn">
+         <property name="toolTip">
+          <string>zoom in</string>
+         </property>
+         <property name="statusTip">
+          <string>zoom in</string>
+         </property>
          <property name="text">
-          <string>...</string>
+          <string>zoom in</string>
          </property>
         </widget>
        </item>

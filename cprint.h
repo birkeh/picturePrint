@@ -92,6 +92,32 @@ private slots:
 	 \param printer
 	*/
 	void									onPaintRequested(QPrinter* printer);
+
+	/*!
+	 \brief
+
+	 \fn onZoomOut
+	*/
+	void									onZoomOut();
+	/*!
+	 \brief
+
+	 \fn onZoomFit
+	*/
+	void									onZoomFit();
+	/*!
+	 \brief
+
+	 \fn onZoomOriginal
+	*/
+	void									onZoomOriginal();
+	/*!
+	 \brief
+
+	 \fn onZoomIn
+	*/
+	void									onZoomIn();
+
 };
 
 #endif // CPRINT_H

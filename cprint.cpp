@@ -67,16 +67,20 @@ cPrint::cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandard
 	m_lpPrintPreviewWidget->setObjectName(QString::fromUtf8("m_lpPrintPreviewWidget"));
 	ui->m_lpSplitter->insertWidget(0, m_lpPrintPreviewWidget);
 
-	const QIcon	zoomOutIcon			= QIcon::fromTheme("document-new");
-	const QIcon	zoomInIcon			= QIcon::fromTheme("zoom-in");
-
-	ui->m_lpZoomOut->setIcon(zoomOutIcon);
-	ui->m_lpZoomIn->setIcon(zoomInIcon);
+	ui->m_lpZoomOut->setIcon(QIcon::fromTheme("zoom-out"));
+	ui->m_lpZoomFit->setIcon(QIcon::fromTheme("zoom-fit"));
+	ui->m_lpZoomOriginal->setIcon(QIcon::fromTheme("zoom-original"));
+	ui->m_lpZoomIn->setIcon(QIcon::fromTheme("zoom-in"));
 
 	connect(ui->m_lpPrinterSelect,		&QComboBox::currentTextChanged,			this,	&cPrint::onPrinterChanged);
 	connect(ui->m_lpPrinterProperties,	&QPushButton::clicked,					this,	&cPrint::onPrinterSettings);
 	connect(ui->m_lpPrintPreview,		&QPushButton::clicked,					this,	&cPrint::onPrintPreview);
 	connect(ui->m_lpPrint,				&QPushButton::clicked,					this,	&cPrint::onPrint);
+
+	connect(ui->m_lpZoomOut,			&QPushButton::clicked,					this,	&cPrint::onZoomOut);
+	connect(ui->m_lpZoomFit,			&QPushButton::clicked,					this,	&cPrint::onZoomFit);
+	connect(ui->m_lpZoomOriginal,		&QPushButton::clicked,					this,	&cPrint::onZoomOriginal);
+	connect(ui->m_lpZoomIn,				&QPushButton::clicked,					this,	&cPrint::onZoomIn);
 
 	connect(m_lpPrintPreviewWidget,		&QPrintPreviewWidget::paintRequested,	this,	&cPrint::onPaintRequested);
 }
@@ -193,4 +197,24 @@ void cPrint::onPrint()
 //		painter.setWindow(pixmap.rect());
 //		painter.drawPixmap(0, 0, pixmap);
 //	}
+}
+
+void cPrint::onZoomOut()
+{
+	m_lpPrintPreviewWidget->zoomOut();
+}
+
+void cPrint::onZoomFit()
+{
+	m_lpPrintPreviewWidget->fitInView();
+}
+
+void cPrint::onZoomOriginal()
+{
+	m_lpPrintPreviewWidget->setZoomFactor(1.0);
+}
+
+void cPrint::onZoomIn()
+{
+	m_lpPrintPreviewWidget->zoomIn();
 }

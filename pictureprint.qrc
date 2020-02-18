@@ -5,5 +5,16 @@
     <qresource prefix="/icons/arc">
         <file alias="index.theme">images/arc/index.theme</file>
         <file alias="16x16/zoom-in.png">images/arc/16x16/actions/zoom-in.png</file>
+        <file alias="16x16/zoom-fit.png">images/arc/16x16/actions/zoom-fit.png</file>
+        <file alias="16x16/zoom-original.png">images/arc/16x16/actions/zoom-original.png</file>
+        <file alias="16x16/zoom-out.png">images/arc/16x16/actions/zoom-out.png</file>
+        <file alias="22x22/zoom-fit.png">images/arc/22x22/actions/zoom-fit.png</file>
+        <file alias="22x22/zoom-in.png">images/arc/22x22/actions/zoom-in.png</file>
+        <file alias="22x22/zoom-original.png">images/arc/22x22/actions/zoom-original.png</file>
+        <file alias="22x22/zoom-out.png">images/arc/22x22/actions/zoom-out.png</file>
+        <file alias="24x24/zoom-fit.png">images/arc/24x24/actions/zoom-fit.png</file>
+        <file alias="24x24/zoom-in.png">images/arc/24x24/actions/zoom-in.png</file>
+        <file alias="24x24/zoom-original.png">images/arc/24x24/actions/zoom-original.png</file>
+        <file alias="24x24/zoom-out.png">images/arc/24x24/actions/zoom-out.png</file>
     </qresource>
 </RCC>
