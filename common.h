@@ -1,11 +1,15 @@
 /*!
  \file common.h
-
 */
 
 #ifndef COMMON_H
 #define COMMON_H
 
+
+#include <QSize>
+#include <QSizeF>
+#include <QPoint>
+#include <QPointF>
 
 #include <QDebug>
 
@@ -25,7 +29,6 @@
 
 /*!
  \brief
-
  \class tagIMAGEFORMAT common.h "common.h"
 */
 typedef struct tagIMAGEFORMAT
@@ -37,14 +40,12 @@ typedef struct tagIMAGEFORMAT
 	bool	write; /*!< TODO: describe */
 /*!
  \brief
-
  \typedef IMAGEFORMAT*/
 } IMAGEFORMAT;
 
 
 /*!
  \brief
-
  \fn generateReadList
  \param imageFormats
  \return QStringList
@@ -52,7 +53,6 @@ typedef struct tagIMAGEFORMAT
 QStringList		generateReadList(const QList<IMAGEFORMAT>& imageFormats);
 /*!
  \brief
-
  \fn generateWriteList
  \param imageFormats
  \return QStringList
@@ -61,7 +61,6 @@ QStringList		generateWriteList(const QList<IMAGEFORMAT>& imageFormats);
 
 /*!
  \brief
-
  \fn blob2Image
  \param ba
  \return QImage
@@ -69,7 +68,6 @@ QStringList		generateWriteList(const QList<IMAGEFORMAT>& imageFormats);
 QImage			blob2Image(const QByteArray& ba);
 /*!
  \brief
-
  \fn image2Blob
  \param image
  \return QByteArray
@@ -78,11 +76,17 @@ QByteArray		image2Blob(const QImage& image);
 
 /*!
  \brief
-
  \fn userDir
  \return QString
 */
 QString			userDir();
+
+int				scale(int v, qreal s);
+qreal			scale(qreal v, qreal s);
+QSize			scale(const QSize& size, qreal s);
+QSize			scale(const QSizeF& size, qreal s);
+QPoint			scale(const QPoint& point, qreal s);
+QPoint			scale(const QPointF& point, qreal s);
 
 
 #endif // COMMON_H

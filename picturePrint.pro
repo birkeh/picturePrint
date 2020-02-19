@@ -49,6 +49,7 @@ SOURCES += \
     cfilebrowser.cpp \
     cfileviewer.cpp \
     cimage.cpp \
+    clayout.cpp \
     common.cpp \
     cprint.cpp \
     csplashscreen.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     cfilebrowser.h \
     cfileviewer.h \
     cimage.h \
+    clayout.h \
     cmainwindow.h \
     common.h \
     cprint.h \
@@ -68,6 +70,7 @@ HEADERS += \
 FORMS += \
     cfilebrowser.ui \
     cfileviewer.ui \
+    clayout.ui \
     cmainwindow.ui \
     cprint.ui
 

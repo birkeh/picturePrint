@@ -1,6 +1,5 @@
 /*!
  \file common.cpp
-
 */
 
 #include "common.h"
@@ -67,4 +66,34 @@ QByteArray image2Blob(const QImage &image)
 QString userDir()
 {
 	return(QDir::homePath() + QDir::separator() + ".picturePrint" + QDir::separator());
+}
+
+int scale(int v, qreal s)
+{
+	return(static_cast<int>(static_cast<qreal>(v)*s));
+}
+
+qreal scale(qreal v, qreal s)
+{
+	return(v*s);
+}
+
+QSize scale(const QSize& size, qreal s)
+{
+	return(QSize(scale(size.width(), s), scale(size.height(), s)));
+}
+
+QSize scale(const QSizeF& size, qreal s)
+{
+	return(QSize(scale(size.width(), s), scale(size.height(), s)));
+}
+
+QPoint scale(const QPoint& point, qreal s)
+{
+	return(QPoint(scale(point.x(), s), scale(point.y(), s)));
+}
+
+QPoint scale(const QPointF& point, qreal s)
+{
+	return(QPoint(scale(point.x(), s), scale(point.y(), s)));
 }

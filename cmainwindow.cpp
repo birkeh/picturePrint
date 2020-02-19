@@ -81,10 +81,13 @@ void cMainWindow::initUI()
 	m_lpSelectedListModel	= new QStandardItemModel(0, 0);
 	ui->m_lpSelectedList->setModel(m_lpSelectedListModel);
 
-	m_lpFileBrowser	= new cFileBrowser(m_lpProgressBar, &m_imageFormats, ui->m_lpSelectedList, m_lpSelectedListModel, this);
+	m_lpFileBrowser			= new cFileBrowser(m_lpProgressBar, &m_imageFormats, ui->m_lpSelectedList, m_lpSelectedListModel, this);
 	ui->m_lpMainTab->addTab(m_lpFileBrowser, "Files");
 
-	m_lpPrint		= new cPrint(m_lpProgressBar, ui->m_lpSelectedList, m_lpSelectedListModel, this);
+	m_lpLayout				= new cLayout(this);
+	ui->m_lpMainTab->addTab(m_lpLayout, "Layout");
+
+	m_lpPrint				= new cPrint(m_lpProgressBar, ui->m_lpSelectedList, m_lpSelectedListModel, this);
 	ui->m_lpMainTab->addTab(m_lpPrint, "Print");
 
 	if(!settings.value("main/maximized").toBool())

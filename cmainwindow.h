@@ -11,6 +11,7 @@
 #include "common.h"
 
 #include "cfilebrowser.h"
+#include "clayout.h"
 #include "cprint.h"
 
 #include <QMainWindow>
@@ -42,11 +43,12 @@ public:
 	~cMainWindow();
 
 private:
-	Ui::cMainWindow*				ui; /*!< TODO: describe */
+	Ui::cMainWindow*				ui;						/*!< TODO: describe */
 	cSplashScreen*					m_lpSplashScreen;		/*!< TODO: describe */
 	QProgressBar*					m_lpProgressBar;		/*!< TODO: describe */
 
 	cFileBrowser*					m_lpFileBrowser;		/*!< TODO: describe */
+	cLayout*						m_lpLayout;				/*!< TODO: describe */
 	cPrint*							m_lpPrint;				/*!< TODO: describe */
 	QStandardItemModel*				m_lpSelectedListModel;	/*!< TODO: describe */
 
