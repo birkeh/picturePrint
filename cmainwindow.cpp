@@ -30,6 +30,8 @@ cMainWindow::cMainWindow(cSplashScreen* lpSplashScreen, QWidget *parent)
 	createActions();
 
 	ui->m_lpMainTab->setCurrentIndex(1);
+
+	connect(m_lpLayout,	&cLayout::layoutChanged,	m_lpPrint,	&cPrint::onLayoutChanged);
 }
 
 cMainWindow::~cMainWindow()
@@ -87,7 +89,7 @@ void cMainWindow::initUI()
 	m_lpLayout				= new cLayout(this);
 	ui->m_lpMainTab->addTab(m_lpLayout, "Layout");
 
-	m_lpPrint				= new cPrint(m_lpProgressBar, ui->m_lpSelectedList, m_lpSelectedListModel, this);
+	m_lpPrint				= new cPrint(m_lpProgressBar, ui->m_lpSelectedList, m_lpSelectedListModel, m_lpLayout, this);
 	ui->m_lpMainTab->addTab(m_lpPrint, "Print");
 
 	if(!settings.value("main/maximized").toBool())
@@ -102,20 +104,10 @@ void cMainWindow::initUI()
 		if(iX != -1 && iY != -1)
 			move(iX, iY);
 	}
-
-//	QStringList			headerLabels	= QStringList() << tr("icon") << tr("path") << tr("file") << tr("size") << tr("date") << tr("width") << tr("height") << ("");
-//	m_lpFileListModel->setHorizontalHeaderLabels(headerLabels);
 }
 
 void cMainWindow::createActions()
 {
-//	setToolButtonStyle(Qt::ToolButtonFollowStyle);
-
-//	createFileActions();
-//	createContextActions();
-
-//	connect(ui->m_lpFileList,		&cTreeView::deleteEntrys,	this,		&cMainWindow::onDeleteEntrys);
-//	connect(ui->m_lpThumbnailSize,	&QSlider::valueChanged,		this,		&cMainWindow::onThumbnailSize);
 }
 
 void cMainWindow::createContextActions()
@@ -124,34 +116,6 @@ void cMainWindow::createContextActions()
 
 void cMainWindow::createFileActions()
 {
-//	m_lpFileToolBar	= addToolBar("file");
-
-//	const QIcon	openIcon			= QIcon::fromTheme("document-open");
-//	m_lpOpenFileAction				= m_lpFileToolBar->addAction(openIcon, tr("&Open..."), this, &cMainWindow::onAddFile);
-//	m_lpOpenFileAction->setShortcut(QKeySequence::Open);
-
-//	const QIcon	openDirectoryIcon	= QIcon::fromTheme("folder");
-//	m_lpOpenDirectoryAction			= m_lpFileToolBar->addAction(openIcon, tr("&Open Folder..."), this, &cMainWindow::onAddFolder);
-
-
-//	m_lpListToolBar	= addToolBar("list");
-
-//	const QIcon	deleteIcon			= QIcon::fromTheme("edit-delete");
-//	m_lpDeleteAction				= m_lpListToolBar->addAction(deleteIcon, tr("&Delete"), this, &cMainWindow::onDeleteEntrys);
-//	m_lpDeleteAction->setShortcut(QKeySequence::Delete);
-
-//	const QIcon	clearIcon			= QIcon::fromTheme("edit-clear");
-//	m_lpClearAction					= m_lpListToolBar->addAction(clearIcon, tr("&Clear"), this, &cMainWindow::onClearList);
-
-
-//	m_lpActionToolBar	= addToolBar("action");
-
-//	const QIcon	convertIcon			= QIcon::fromTheme("system-run");
-//	m_lpConvertAction				= m_lpActionToolBar->addAction(convertIcon, tr("&Convert"), this, &cMainWindow::onConvert);
-//	m_lpConvertAction->setShortcut(QKeySequence::Delete);
-
-//	const QIcon	stopIcon			= QIcon::fromTheme("process-stop");
-//	m_lpStopAction					= m_lpActionToolBar->addAction(stopIcon, tr("&Stop"), this, &cMainWindow::onStop);
 }
 
 void cMainWindow::setImageFormats()

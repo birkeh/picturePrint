@@ -3,9 +3,10 @@
 
 #include "common.h"
 
-#include <QPageSize>
 #include <QPixmap>
 #include <QPainter>
+#include <QGraphicsScene>
+#include <QGraphicsRectItem>
 
 #include <QDebug>
 
@@ -16,6 +17,9 @@ cLayout::cLayout(QWidget *parent) :
 	m_initializing(true)
 {
 	ui->setupUi(this);
+
+	QGraphicsScene*	lpScene	= new QGraphicsScene;
+	ui->m_lpLayoutPreview->setScene(lpScene);
 
 	for(int id = 0;id < QPageSize::LastPageSize;id++)
 		ui->m_lpPageSize->addItem(QPageSize::name(static_cast<QPageSize::PageSizeId>(id)), QVariant::fromValue(static_cast<QPageSize::PageSizeId>(id)));
@@ -136,6 +140,51 @@ void cLayout::resizeEvent(QResizeEvent *event)
 	QWidget::resizeEvent(event);
 }
 
+QPageSize cLayout::pageSize()
+{
+	return(QPageSize(ui->m_lpPageSize->currentData().value<QPageSize::PageSizeId>()));
+}
+
+qreal cLayout::borderTop()
+{
+	return(ui->m_lpBorderTop->value());
+}
+
+qreal cLayout::borderLeft()
+{
+	return(ui->m_lpBorderLeft->value());
+}
+
+qreal cLayout::borderRight()
+{
+	return(ui->m_lpBorderRight->value());
+}
+
+qreal cLayout::borderBottom()
+{
+	return(ui->m_lpBorderBottom->value());
+}
+
+qreal cLayout::gutter()
+{
+	return(ui->m_lpGutterWidth->value());
+}
+
+int cLayout::tilesH()
+{
+	return(ui->m_lpTilesH->value());
+}
+
+int cLayout::tilesV()
+{
+	return(ui->m_lpTilesV->value());
+}
+
+QPageSize::Unit cLayout::unit()
+{
+	return(ui->m_lpUnit->currentData().value<QPageSize::Unit>());
+}
+
 void cLayout::redrawPreview()
 {
 	QSize		widgetSize		= ui->m_lpLayoutPreview->size();
@@ -150,8 +199,8 @@ void cLayout::redrawPreview()
 	qreal		gutter			= ui->m_lpGutterWidth->value();
 	qreal		tilesH			= static_cast<qreal>(ui->m_lpTilesH->value());
 	qreal		tilesV			= static_cast<qreal>(ui->m_lpTilesV->value());
-	qreal		scaleFactor		= static_cast<qreal>(widgetSize.width()-10) / pageWidth;
-	qreal		tmp				= static_cast<qreal>(widgetSize.height()-10) / pageHeight;
+	qreal		scaleFactor		= static_cast<qreal>(widgetSize.width()-40) / pageWidth;
+	qreal		tmp				= static_cast<qreal>(widgetSize.height()-40) / pageHeight;
 
 	QString		unit;
 
@@ -188,18 +237,18 @@ void cLayout::redrawPreview()
 	if(tmp < scaleFactor)
 		scaleFactor	= tmp;
 
-	QPixmap		pixmap(scale(size, scaleFactor));
-	pixmap.fill(Qt::white);
-	QPainter painter(&pixmap);
+	QGraphicsScene*		lpScene	= ui->m_lpLayoutPreview->scene();
+
+	lpScene->clear();
+
+	lpScene->setSceneRect(0, 0, scale(size, scaleFactor).width(), scale(size, scaleFactor).height());
+	QGraphicsRectItem*	paperRect	= new QGraphicsRectItem(0, 0, scale(size, scaleFactor).width(), scale(size, scaleFactor).height());
+	paperRect->setBrush(QBrush(Qt::white));
+	lpScene->addItem(paperRect);
 
 	QRectF		rect;
 	qreal		rectW	= (pageWidth-borderLeft-borderRight-gutter*(tilesH-1)) / tilesH;
 	qreal		rectH	= (pageHeight-borderTop-borderBottom-gutter*(tilesV-1)) / tilesV;
-
-//	borderTop			= scale(borderTop, scaleFactor);
-//	borderLeft			= scale(borderLeft, scaleFactor);
-
-	painter.setPen(Qt::black);
 
 	for(qreal x = 0;x < tilesH;x++)
 	{
@@ -210,11 +259,12 @@ void cLayout::redrawPreview()
 
 			rect.setTopLeft(scale(QPointF(l, t), scaleFactor));
 			rect.setSize(scale(QSizeF(rectW, rectH), scaleFactor));
-//			rect.setTopLeft(QPoint(borderLeft+x*(rectW+gutter), borderTop+y*(rectH+gutter)));
-//			rect.setSize(QSizeF(rectW, rectH));
-			painter.drawRect(rect);
+
+			QGraphicsRectItem*	lpRect	= new QGraphicsRectItem(rect);
+			lpRect->setPen(QPen(Qt::black));
+			lpScene->addItem(lpRect);
 		}
 	}
 
-	ui->m_lpLayoutPreview->setPixmap(pixmap);
+	emit layoutChanged();
 }

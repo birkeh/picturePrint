@@ -16,5 +16,11 @@
         <file alias="24x24/zoom-in.png">images/arc/24x24/actions/zoom-in.png</file>
         <file alias="24x24/zoom-original.png">images/arc/24x24/actions/zoom-original.png</file>
         <file alias="24x24/zoom-out.png">images/arc/24x24/actions/zoom-out.png</file>
+        <file alias="16x16/document-print.png">images/arc/16x16/actions/document-print.png</file>
+        <file alias="16x16/document-print-preview.png">images/arc/16x16/actions/document-print-preview.png</file>
+        <file alias="22x22/document-print.png">images/arc/22x22/actions/document-print.png</file>
+        <file alias="22x22/document-print-preview.png">images/arc/22x22/actions/document-print-preview.png</file>
+        <file alias="24x24/document-print.png">images/arc/24x24/actions/document-print.png</file>
+        <file alias="24x24/document-print-preview.png">images/arc/24x24/actions/document-print-preview.png</file>
     </qresource>
 </RCC>

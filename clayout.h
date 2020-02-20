@@ -8,6 +8,7 @@
 
 
 #include <QWidget>
+#include <QPageSize>
 
 
 namespace Ui {
@@ -37,6 +38,16 @@ public:
 	 \fn ~cLayout
 	*/
 	~cLayout();
+
+	QPageSize				pageSize();
+	qreal					borderTop();
+	qreal					borderLeft();
+	qreal					borderRight();
+	qreal					borderBottom();
+	qreal					gutter();
+	int						tilesH();
+	int						tilesV();
+	QPageSize::Unit			unit();
 
 private:
 	Ui::cLayout*			ui;				/*!< TODO: describe */
@@ -124,6 +135,16 @@ private slots:
 	 \param value
 	*/
 	void					onGutterChanged(double value);
+
+signals:
+	/*!
+	 \brief
+
+	 \fn layoutChanged
+	 \param layout
+	 \param i
+	*/
+	void					layoutChanged();
 
 protected:
 	/*!

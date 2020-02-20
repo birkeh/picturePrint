@@ -20,14 +20,18 @@
 #include <QDebug>
 
 
-cPrint::cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandardItemModel* lpSelectedListModel, QWidget *parent) :
+cPrint::cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandardItemModel* lpSelectedListModel, cLayout* lpLayout, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::cPrint),
 	m_lpProgressBar(lpProgressBar),
 	m_lpSelectedList(lpSelectedList),
-	m_lpSelectedListModel(lpSelectedListModel)
+	m_lpSelectedListModel(lpSelectedListModel),
+	m_lpLayout(lpLayout)
 {
 	ui->setupUi(this);
+
+	ui->m_lpPaperSourceLabel->setVisible(false);
+	ui->m_lpPaperSource->setVisible(false);
 
 	m_printerStateText.insert(QPrinter::Idle,				tr("idle"));
 	m_printerStateText.insert(QPrinter::Active,				tr("Active"));
@@ -72,6 +76,9 @@ cPrint::cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandard
 	ui->m_lpZoomOriginal->setIcon(QIcon::fromTheme("zoom-original"));
 	ui->m_lpZoomIn->setIcon(QIcon::fromTheme("zoom-in"));
 
+	ui->m_lpPrintPreview->setIcon(QIcon::fromTheme("document-print-preview"));
+	ui->m_lpPrint->setIcon(QIcon::fromTheme("document-print"));
+
 	connect(ui->m_lpPrinterSelect,		&QComboBox::currentTextChanged,			this,	&cPrint::onPrinterChanged);
 	connect(ui->m_lpPrinterProperties,	&QPushButton::clicked,					this,	&cPrint::onPrinterSettings);
 	connect(ui->m_lpPrintPreview,		&QPushButton::clicked,					this,	&cPrint::onPrintPreview);
@@ -94,6 +101,11 @@ cPrint::~cPrint()
 		delete m_lpPrinter;
 
 	delete ui;
+}
+
+void cPrint::onLayoutChanged()
+{
+	ui->m_lpPrintPreview->setEnabled(true);
 }
 
 void cPrint::onPrinterChanged(const QString& printer)
@@ -120,12 +132,16 @@ void cPrint::onPrinterChanged(const QString& printer)
 	for(int x = 0;x < paperSources.count();x++)
 		ui->m_lpPaperSource->addItem(m_printerPaperSource[paperSources[x]]);
 	ui->m_lpPaperSource->setCurrentText(m_printerPaperSource[m_lpPrinter->paperSource()]);
+
+	ui->m_lpPrintPreview->setEnabled(true);
 }
 
 void cPrint::onPrinterSettings()
 {
 	QPrintDialog	printDialog(m_lpPrinter);
 	printDialog.exec();
+
+	ui->m_lpPrintPreview->setEnabled(true);
 }
 
 void cPrint::onPrintPreview()
@@ -138,6 +154,8 @@ void cPrint::onPrintPreview()
 		return;
 
 	m_lpPrintPreviewWidget->updatePreview();
+
+	ui->m_lpPrintPreview->setEnabled(false);
 }
 
 void cPrint::onPaintRequested(QPrinter* printer)
@@ -155,6 +173,17 @@ void cPrint::onPaintRequested(QPrinter* printer)
 	if(image.isNull())
 		return;
 
+	QPageSize		pageSize		= m_lpLayout->pageSize();
+	qreal			borderTop		= m_lpLayout->borderTop();
+	qreal			borderLeft		= m_lpLayout->borderLeft();
+	qreal			borderRight		= m_lpLayout->borderRight();
+	qreal			borderBottom	= m_lpLayout->borderBottom();
+	qreal			gutter			= m_lpLayout->gutter();
+	int				tilesH			= m_lpLayout->tilesH();
+	int				tilesV			= m_lpLayout->tilesV();
+	QPageSize::Unit	unit			= m_lpLayout->unit();
+
+	printer->setPageSize(pageSize);
 	printer->newPage();
 
 	QPixmap			pixmap	= QPixmap::fromImage(image);

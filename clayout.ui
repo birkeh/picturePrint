@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -347,11 +347,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="m_lpLayoutPreview">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
+      <widget class="QGraphicsView" name="m_lpLayoutPreview"/>
      </item>
     </layout>
    </item>

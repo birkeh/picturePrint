@@ -7,6 +7,8 @@
 #define CPRINT_H
 
 
+#include "clayout.h"
+
 #include <QWidget>
 
 #include <QProgressBar>
@@ -37,7 +39,7 @@ public:
 	 \fn cPrint
 	 \param parent
 	*/
-	explicit cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandardItemModel* lpSelectedListModel, QWidget *parent = nullptr);
+	explicit cPrint(QProgressBar* lpProgressBar, QListView* lpSelectedList, QStandardItemModel* lpSelectedListModel, cLayout* lpLayout, QWidget *parent = nullptr);
 	/*!
 	 \brief
 
@@ -50,6 +52,7 @@ private:
 	QProgressBar*							m_lpProgressBar;		/*!< TODO: describe */
 	QListView*								m_lpSelectedList;		/*!< TODO: describe */
 	QStandardItemModel*						m_lpSelectedListModel;	/*!< TODO: describe */
+	cLayout*								m_lpLayout;				/*!< TODO: describe */
 
 	QPrinter*								m_lpPrinter;			/*!< TODO: describe */
 	QPrintPreviewWidget*					m_lpPrintPreviewWidget;	/*!< TODO: describe */
@@ -57,7 +60,17 @@ private:
 	QMap<QPrinter::PrinterState, QString>	m_printerStateText;		/*!< TODO: describe */
 	QMap<QPrinter::PaperSource, QString>	m_printerPaperSource;	/*!< TODO: describe */
 
+public slots:
+	/*!
+	 \brief
+
+	 \fn onLayoutChanged
+	 \param layout
+	*/
+	void									onLayoutChanged();
+
 private slots:
+
 	/*!
 	 \brief
 

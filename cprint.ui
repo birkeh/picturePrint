@@ -39,7 +39,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLabel" name="label_2">
+               <widget class="QLabel" name="m_lpPrinterSelectLabel">
                 <property name="text">
                  <string>Name:</string>
                 </property>
@@ -86,7 +86,7 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QLabel" name="label">
+               <widget class="QLabel" name="m_lpPrinterMakeAndModelLabel">
                 <property name="text">
                  <string>Printer Model:</string>
                 </property>
@@ -96,7 +96,7 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLabel" name="label_4">
+               <widget class="QLabel" name="m_lpPrinterStatusLabel">
                 <property name="text">
                  <string>Status:</string>
                 </property>
@@ -113,7 +113,7 @@
                </widget>
               </item>
               <item row="3" column="1">
-               <widget class="QLabel" name="label_5">
+               <widget class="QLabel" name="m_lpPrinterLocationLabel">
                 <property name="text">
                  <string>Location:</string>
                 </property>
@@ -136,7 +136,7 @@
             <item row="0" column="0">
              <layout class="QGridLayout" name="gridLayout_4">
               <item row="0" column="0">
-               <widget class="QLabel" name="label_3">
+               <widget class="QLabel" name="m_lpPaperSizeLabel">
                 <property name="text">
                  <string>Paper Size:</string>
                 </property>
@@ -162,7 +162,7 @@
                <widget class="QComboBox" name="m_lpPaperSize"/>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_6">
+               <widget class="QLabel" name="m_lpPaperSourceLabel">
                 <property name="text">
                  <string>Paper Source:</string>
                 </property>
@@ -225,6 +225,12 @@
          <property name="text">
           <string>zoom to fit</string>
          </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
         </widget>
        </item>
        <item>
@@ -238,6 +244,12 @@
          <property name="text">
           <string>zoom original</string>
          </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
         </widget>
        </item>
        <item>
@@ -250,6 +262,50 @@
          </property>
          <property name="text">
           <string>zoom in</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_lpPrintPreview">
+         <property name="toolTip">
+          <string>print preview</string>
+         </property>
+         <property name="statusTip">
+          <string>print preview</string>
+         </property>
+         <property name="text">
+          <string>print preview</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_lpPrint">
+         <property name="toolTip">
+          <string>print</string>
+         </property>
+         <property name="statusTip">
+          <string>print</string>
+         </property>
+         <property name="text">
+          <string>print</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -265,20 +321,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="m_lpPrintPreview">
-         <property name="text">
-          <string>preview</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="m_lpPrint">
-         <property name="text">
-          <string>print</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
