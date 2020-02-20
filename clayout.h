@@ -9,6 +9,7 @@
 
 #include <QWidget>
 #include <QPageSize>
+#include <QMarginsF>
 
 
 namespace Ui {
@@ -44,6 +45,7 @@ public:
 	qreal					borderLeft();
 	qreal					borderRight();
 	qreal					borderBottom();
+	QMarginsF				pageMargins();
 	qreal					gutter();
 	int						tilesH();
 	int						tilesV();

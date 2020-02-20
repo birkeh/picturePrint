@@ -145,6 +145,11 @@ QPageSize cLayout::pageSize()
 	return(QPageSize(ui->m_lpPageSize->currentData().value<QPageSize::PageSizeId>()));
 }
 
+QMarginsF cLayout::pageMargins()
+{
+	return(QMarginsF(borderLeft(), borderTop(), borderRight(), borderBottom()));
+}
+
 qreal cLayout::borderTop()
 {
 	return(ui->m_lpBorderTop->value());
