@@ -91,6 +91,9 @@ private:
 	*/
 	void					addFile(const QFileInfo& fileInfo);
 
+signals:
+	void					countChanged();
+
 private slots:
 	/*!
 	 \brief

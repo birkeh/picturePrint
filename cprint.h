@@ -65,9 +65,14 @@ public slots:
 	 \brief
 
 	 \fn onLayoutChanged
-	 \param layout
 	*/
 	void									onLayoutChanged();
+	/*!
+	 \brief
+
+	 \fn onCountChanged
+	*/
+	void									onCountChanged();
 
 private slots:
 

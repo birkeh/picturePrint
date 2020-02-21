@@ -108,6 +108,11 @@ void cPrint::onLayoutChanged()
 	ui->m_lpPrintPreview->setEnabled(true);
 }
 
+void cPrint::onCountChanged()
+{
+	ui->m_lpPrintPreview->setEnabled(true);
+}
+
 void cPrint::onPrinterChanged(const QString& printer)
 {
 	m_lpPrinter->setPrinterName(printer);
@@ -146,12 +151,12 @@ void cPrint::onPrinterSettings()
 
 void cPrint::onPrintPreview()
 {
-	if(!m_lpSelectedListModel->rowCount())
-		return;
+//	if(!m_lpSelectedListModel->rowCount())
+//		return;
 
-	cFileViewer*	lpFileViewer	= static_cast<cFileViewer*>(m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(0, 0)));
-	if(!lpFileViewer)
-		return;
+//	cFileViewer*	lpFileViewer	= static_cast<cFileViewer*>(m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(0, 0)));
+//	if(!lpFileViewer)
+//		return;
 
 	m_lpPrintPreviewWidget->updatePreview();
 
@@ -160,14 +165,8 @@ void cPrint::onPrintPreview()
 
 void cPrint::onPaintRequested(QPrinter* printer)
 {
-	if(!m_lpSelectedListModel->rowCount())
-		return;
-
 	QPageSize		pageSize		= m_lpLayout->pageSize();
 	QPageSize::Unit	unit			= m_lpLayout->unit();
-	QSizeF			size			= pageSize.size(unit);
-	qreal			pageWidth		= size.width();
-	qreal			pageHeight		= size.height();
 	QMarginsF		pageMargins		= m_lpLayout->pageMargins();
 	qreal			borderTop		= m_lpLayout->borderTop();
 	qreal			borderLeft		= m_lpLayout->borderLeft();
@@ -177,6 +176,12 @@ void cPrint::onPaintRequested(QPrinter* printer)
 	int				tilesH			= m_lpLayout->tilesH();
 	int				tilesV			= m_lpLayout->tilesV();
 
+	printer->setPageSize(pageSize);
+	printer->setPageMargins(pageMargins, static_cast<QPageLayout::Unit>(unit));
+
+	QSizeF			printerSize		= printer->pageRect(QPrinter::DevicePixel).size();
+	qreal			pageWidth		= printerSize.width();
+	qreal			pageHeight		= printerSize.height();
 	qreal			rectW			= (pageWidth-borderLeft-borderRight-gutter*(tilesH-1)) / tilesH;
 	qreal			rectH			= (pageHeight-borderTop-borderBottom-gutter*(tilesV-1)) / tilesV;
 	bool			portrait		= true;
@@ -184,56 +189,75 @@ void cPrint::onPaintRequested(QPrinter* printer)
 	if(rectW > rectH)
 		portrait	= false;
 
-	printer->setPageSize(pageSize);
-	printer->setPageMargins(pageMargins, static_cast<QPageLayout::Unit>(unit));
-
-	int				imageNr			= 0;
-
 	printer->newPage();
 
-	for(int x = 0;x < tilesH;x++)
+	QPainter		painter(printer);
+	int				listIndex		= 0;
+	qint32			imageCount		= 0;
+	cImage			image;
+
+	for(;;)
 	{
-		for(int y = 0;y < tilesV;y++)
+		for(int x = 0;x < tilesH;x++)
 		{
-			cFileViewer*	lpFileViewer	= static_cast<cFileViewer*>(m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(imageNr, 0)));
-			if(!lpFileViewer)
-				return;
-
-			QString			fileName		= lpFileViewer->fileName();
-			cImage			image(fileName);
-
-			if(image.isNull())
-				return;
-
-			QPixmap			pixmap;
-
-			if((image.width() < image.height() && !portrait) ||
-					(image.width() > image.height() && portrait))
+			for(int y = 0;y < tilesV;y++)
 			{
-				QPoint	center	= image.rect().center();
-				QMatrix	matrix;
-				matrix.translate(center.x(), center.y());
-				matrix.rotate(90);
-				pixmap	= QPixmap::fromImage(image.transformed(matrix));
+				if(!imageCount)
+				{
+					cFileViewer*	lpFileViewer	= static_cast<cFileViewer*>(m_lpSelectedList->indexWidget(m_lpSelectedListModel->index(listIndex, 0)));
+					if(!lpFileViewer)
+						return;
+
+					imageCount	= lpFileViewer->count()-1;
+					listIndex++;
+
+					QString			fileName		= lpFileViewer->fileName();
+					image.load(fileName);
+				}
+				else
+					imageCount--;
+
+				if(image.isNull())
+					return;
+
+				QPixmap			pixmap;
+
+				if((image.width() < image.height() && !portrait) ||
+						(image.width() > image.height() && portrait))
+				{
+					QPoint	center	= image.rect().center();
+					QMatrix	matrix;
+					matrix.translate(center.x(), center.y());
+					matrix.rotate(90);
+					pixmap	= QPixmap::fromImage(image.transformed(matrix));
+				}
+				else
+					pixmap	= QPixmap::fromImage(image);
+
+				QRect			rect			= QRect(0, 0, static_cast<int>(rectW), static_cast<int>(rectH));
+				QSize			size			= pixmap.size();
+
+				int	t	= static_cast<int>(borderTop+static_cast<qreal>(y)*(rectH+gutter));
+				int	l	= static_cast<int>(borderLeft+static_cast<qreal>(x)*(rectW+gutter));
+
+//				size.scale(rect.size(), Qt::KeepAspectRatio);
+				size.scale(rect.size(), Qt::KeepAspectRatioByExpanding);
+
+				if(size.width() > rect.width())
+					size.setWidth(rect.width());
+				if(size.height() > rect.height())
+					size.setHeight(rect.height());
+
+				painter.setViewport(l, t, size.width(), size.height());
+
+				painter.setWindow(pixmap.rect());
+				painter.drawPixmap(0, 0, pixmap);
+
+				if(!imageCount && listIndex >= m_lpSelectedListModel->rowCount())
+					return;
 			}
-			else
-				pixmap	= QPixmap::fromImage(image);
-
-			QPainter		painter(printer);
-//			QRect			rectViewport	= painter.viewport();
-			QRect			rect			= QRect(0, 0, static_cast<int>(rectW), static_cast<int>(rectH));
-			QSize			size			= pixmap.size();
-
-			int	t	= static_cast<int>(borderTop+static_cast<qreal>(y)*(rectH+gutter));
-			int	l	= static_cast<int>(borderLeft+static_cast<qreal>(x)*(rectW+gutter));
-
-			size.scale(rect.size(), Qt::KeepAspectRatio);
-//			painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-			painter.setViewport(l, t, size.width(), size.height());
-			painter.setWindow(pixmap.rect());
-//			painter.drawPixmap(0, 0, pixmap);
-			painter.drawPixmap(l, t, pixmap);
 		}
+		printer->newPage();
 	}
 }
 

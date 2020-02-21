@@ -131,6 +131,8 @@ void cFileBrowser::onCountChanged(cFileViewer* fileViewer)
 				}
 				else
 					m_lpSelectedListModel->removeRow(x);
+
+				emit countChanged();
 				return;
 			}
 		}
@@ -145,6 +147,8 @@ void cFileBrowser::onCountChanged(cFileViewer* fileViewer)
 	m_lpSelectedList->setIndexWidget(m_lpSelectedListModel->index(m_lpSelectedListModel->rowCount()-1, 0), lpFileViewer1);
 
 	connect(lpFileViewer1,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
+
+	emit countChanged();
 }
 
 void cFileBrowser::onCountChangedSelected(cFileViewer* fileViewer)
@@ -162,10 +166,13 @@ void cFileBrowser::onCountChangedSelected(cFileViewer* fileViewer)
 				lpFileViewer->setCount(fileViewer->count());
 				connect(lpFileViewer,	&cFileViewer::countChanged,	this,	&cFileBrowser::onCountChangedSelected);
 
+				emit countChanged();
 				return;
 			}
 		}
 	}
+
+	emit countChanged();
 }
 
 void cFileBrowser::directorySelected(const QString& filePath)

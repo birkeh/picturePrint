@@ -31,7 +31,8 @@ cMainWindow::cMainWindow(cSplashScreen* lpSplashScreen, QWidget *parent)
 
 	ui->m_lpMainTab->setCurrentIndex(1);
 
-	connect(m_lpLayout,	&cLayout::layoutChanged,	m_lpPrint,	&cPrint::onLayoutChanged);
+	connect(m_lpLayout,			&cLayout::layoutChanged,		m_lpPrint,	&cPrint::onLayoutChanged);
+	connect(m_lpFileBrowser,	&cFileBrowser::countChanged,	m_lpPrint,	&cPrint::onCountChanged);
 }
 
 cMainWindow::~cMainWindow()
